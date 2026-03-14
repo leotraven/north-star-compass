@@ -1,0 +1,126 @@
+<section id="how-it-works" class="py-8 md:py-10">
+  <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3">
+    <article class="rounded-2xl border border-base-800 bg-base-900 p-5">
+      <p class="text-[11px] tracking-wide uppercase text-orange-400">Input 1</p>
+      <h3 class="mt-2 text-base-100 font-medium">Your North Star</h3>
+      <p class="mt-1 text-sm text-base-400">
+        Your long-term goal, identity shift, or strategic direction.
+      </p>
+    </article>
+    <article class="rounded-2xl border border-base-800 bg-base-900 p-5">
+      <p class="text-[11px] tracking-wide uppercase text-orange-400">Input 2</p>
+      <h3 class="mt-2 text-base-100 font-medium">Immediate Action</h3>
+      <p class="mt-1 text-sm text-base-400">
+        The decision in front of you right now that needs a yes or no.
+      </p>
+    </article>
+    <article class="rounded-2xl border border-base-800 bg-base-900 p-5">
+      <p class="text-[11px] tracking-wide uppercase text-orange-400">Output</p>
+      <h3 class="mt-2 text-base-100 font-medium">Brutally Clear Signal</h3>
+      <p class="mt-1 text-sm text-base-400">
+        Toward, away, or neutral, with the strategic why behind it.
+      </p>
+    </article>
+  </div>
+</section>
+
+<section id="compass-check" class="py-3 pb-16 md:pb-20">
+  <div class="max-w-2xl mx-auto rounded-3xl border border-base-800 bg-base-925 shadow-[0_0_0_1px_rgba(255,255,255,0.03)] p-6 md:p-8">
+    <h2 class="text-2xl md:text-3xl text-base-100 font-medium text-balance">Strategic Gut-Check</h2>
+    <p class="mt-2 text-sm text-base-400">
+      Don't let today's fires burn down tomorrow's goals.
+    </p>
+
+    <form id="compass-form" class="mt-6 space-y-4">
+      <div>
+        <label for="strategy" class="block text-sm font-medium text-base-100">Your North Star</label>
+        <textarea
+          id="strategy"
+          rows="3"
+          required
+          placeholder="Transition from marketing to software engineering within 2 years"
+          class="mt-2 w-full rounded-2xl border border-base-700 bg-base-900 px-4 py-3 text-sm text-base-100 placeholder:text-base-500 outline-none focus:border-orange-400"
+        ></textarea>
+        <p class="mt-2 text-xs text-base-500">Saved locally so you don't have to retype it.</p>
+      </div>
+
+      <div>
+        <label for="action" class="block text-sm font-medium text-base-100">The Immediate Action</label>
+        <textarea
+          id="action"
+          rows="3"
+          required
+          placeholder="Should I take on this high-paying freelance marketing gig this weekend?"
+          class="mt-2 w-full rounded-2xl border border-base-700 bg-base-900 px-4 py-3 text-sm text-base-100 placeholder:text-base-500 outline-none focus:border-orange-400"
+        ></textarea>
+      </div>
+
+      <button
+        id="submit-btn"
+        type="submit"
+        class="px-6 font-medium h-10 text-sm bg-orange-500 text-black rounded-full hover:bg-orange-400 duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        Check Alignment
+      </button>
+    </form>
+
+    <p id="error" class="mt-4 hidden text-sm text-red-400"></p>
+    <div id="result" class="mt-5 hidden rounded-2xl border border-base-800 bg-base-900 p-4 text-sm text-base-100 whitespace-pre-wrap leading-relaxed"></div>
+  </div>
+</section>
+
+<script lang="ts">
+  const STORAGE_KEY = "north-star-strategy";
+
+  const strategyEl = document.getElementById("strategy") as HTMLTextAreaElement | null;
+  const actionEl = document.getElementById("action") as HTMLTextAreaElement | null;
+  const formEl = document.getElementById("compass-form") as HTMLFormElement | null;
+  const resultEl = document.getElementById("result") as HTMLDivElement | null;
+  const errorEl = document.getElementById("error") as HTMLParagraphElement | null;
+  const submitEl = document.getElementById("submit-btn") as HTMLButtonElement | null;
+
+  if (strategyEl && formEl && actionEl && resultEl && errorEl && submitEl) {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      strategyEl.value = saved;
+    }
+
+    strategyEl.addEventListener("input", () => {
+      localStorage.setItem(STORAGE_KEY, strategyEl.value);
+    });
+
+    formEl.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      resultEl.classList.add("hidden");
+      errorEl.classList.add("hidden");
+      submitEl.disabled = true;
+      submitEl.textContent = "Evaluating...";
+
+      try {
+        const response = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            strategy: strategyEl.value,
+            action: actionEl.value,
+          }),
+        });
+
+        if (!response.ok) {
+          const body = await response.json().catch(() => null);
+          throw new Error(body?.error || `Request failed (${response.status})`);
+        }
+
+        const data = await response.json();
+        resultEl.textContent = data.result || "No response from model.";
+        resultEl.classList.remove("hidden");
+      } catch (error) {
+        errorEl.textContent = error instanceof Error ? error.message : "Request failed.";
+        errorEl.classList.remove("hidden");
+      } finally {
+        submitEl.disabled = false;
+        submitEl.textContent = "Check Alignment";
+      }
+    });
+  }
+</script>
