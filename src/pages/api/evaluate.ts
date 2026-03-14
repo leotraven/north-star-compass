@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
 
 const SYSTEM_PROMPT = `You are an expert strategic advisor. Evaluate whether the user's immediate action aligns with their long-term strategy. Be objective, slightly ruthless, and highly analytical. Format your response strictly with:
@@ -25,10 +25,7 @@ export const POST: APIRoute = async ({ request }) => {
       throw new Error("Missing OPENROUTER_API_KEY environment variable");
     }
 
-    const openrouter = createOpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey,
-    });
+    const openrouter = createOpenRouter({ apiKey });
 
     const model = import.meta.env.OPENROUTER_MODEL || "openai/gpt-4o";
 

@@ -6,11 +6,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --env-file=.env --test tests/**/*.test.mjs"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.41",
     "@astrojs/vercel": "^9.0.5",
+    "@openrouter/ai-sdk-provider": "^2.3.1",
     "@tailwindcss/vite": "^4.2.1",
     "ai": "^6.0.116",
     "astro": "^5.18.1"
