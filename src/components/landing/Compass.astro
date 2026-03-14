@@ -69,17 +69,24 @@
   </div>
 </section>
 
-<script lang="ts">
+<script>
+  const isDebug = () => localStorage.getItem("debug") === "true";
+  const log = (...args) => { if (isDebug()) console.log("[compass]", ...args); };
+
   const STORAGE_KEY = "north-star-strategy";
 
-  const strategyEl = document.getElementById("strategy") as HTMLTextAreaElement | null;
-  const actionEl = document.getElementById("action") as HTMLTextAreaElement | null;
-  const formEl = document.getElementById("compass-form") as HTMLFormElement | null;
-  const resultEl = document.getElementById("result") as HTMLDivElement | null;
-  const errorEl = document.getElementById("error") as HTMLParagraphElement | null;
-  const submitEl = document.getElementById("submit-btn") as HTMLButtonElement | null;
+  const strategyEl = document.getElementById("strategy");
+  const actionEl = document.getElementById("action");
+  const formEl = document.getElementById("compass-form");
+  const resultEl = document.getElementById("result");
+  const errorEl = document.getElementById("error");
+  const submitEl = document.getElementById("submit-btn");
 
-  if (strategyEl && formEl && actionEl && resultEl && errorEl && submitEl) {
+  if (!strategyEl || !formEl || !actionEl || !resultEl || !errorEl || !submitEl) {
+    console.warn("[compass] One or more required elements not found. Form will not work.", {
+      strategyEl, formEl, actionEl, resultEl, errorEl, submitEl,
+    });
+  } else {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       strategyEl.value = saved;
@@ -91,12 +98,14 @@
 
     formEl.addEventListener("submit", async (event) => {
       event.preventDefault();
+      log("form submitted");
       resultEl.classList.add("hidden");
       errorEl.classList.add("hidden");
       submitEl.disabled = true;
       submitEl.textContent = "Evaluating...";
 
       try {
+        log("fetching /api/evaluate", { strategy: strategyEl.value.slice(0, 40), action: actionEl.value.slice(0, 40) });
         const response = await fetch("/api/evaluate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -108,10 +117,12 @@
 
         if (!response.ok) {
           const body = await response.json().catch(() => null);
+          log("response error", response.status, body);
           throw new Error(body?.error || `Request failed (${response.status})`);
         }
 
         const data = await response.json();
+        log("response ok", { length: data.result?.length });
         resultEl.textContent = data.result || "No response from model.";
         resultEl.classList.remove("hidden");
       } catch (error) {

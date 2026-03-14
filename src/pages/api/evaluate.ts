@@ -1,5 +1,9 @@
 import type { APIRoute } from "astro";
-import { AzureOpenAI } from "openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { generateText } from "ai";
+
+const DEBUG = import.meta.env.LOG_LEVEL === "debug";
+const log = (...args: unknown[]) => { if (DEBUG) console.log("[evaluate]", ...args); };
 
 const SYSTEM_PROMPT = `You are an expert strategic advisor. Evaluate whether the user's immediate action aligns with their long-term strategy. Be objective, slightly ruthless, and highly analytical. Format your response strictly with:
 1. Alignment Score (1-10)
@@ -7,22 +11,11 @@ const SYSTEM_PROMPT = `You are an expert strategic advisor. Evaluate whether the
 3. The 'Why' (Brief explanation)
 4. Strategic Alternative (If needed)`;
 
-function getClient(): AzureOpenAI {
-  const endpoint = import.meta.env.AZURE_OPENAI_ENDPOINT;
-  const apiKey = import.meta.env.AZURE_OPENAI_API_KEY;
-  const apiVersion = import.meta.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
-
-  if (!endpoint || !apiKey) {
-    throw new Error("Missing AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_KEY environment variables");
-  }
-
-  return new AzureOpenAI({ endpoint, apiKey, apiVersion });
-}
-
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     const { strategy, action } = body;
+    log("request received", { strategy: strategy?.slice(0, 40), action: action?.slice(0, 40) });
 
     if (!strategy || !action) {
       return new Response(JSON.stringify({ error: "Both strategy and action are required." }), {
@@ -31,25 +24,27 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const client = getClient();
-    const deployment = import.meta.env.AZURE_OPENAI_DEPLOYMENT || "gpt-4o";
+    const apiKey = import.meta.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      throw new Error("Missing OPENROUTER_API_KEY environment variable");
+    }
 
-    const completion = await client.chat.completions.create({
-      model: deployment,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `Long-Term Strategy:\n${strategy}\n\nImmediate Action:\n${action}`,
-        },
-      ],
+    const openrouter = createOpenRouter({ apiKey });
+
+    const model = import.meta.env.OPENROUTER_MODEL || "openai/gpt-4o";
+    log("using model", model);
+
+    const { text, usage } = await generateText({
+      model: openrouter(model),
+      system: SYSTEM_PROMPT,
+      prompt: `Long-Term Strategy:\n${strategy}\n\nImmediate Action:\n${action}`,
       temperature: 0.7,
-      max_tokens: 512,
+      maxTokens: 512,
     });
 
-    const result = completion.choices[0]?.message?.content ?? "No response from model.";
+    log("response received", { length: text.length, usage });
 
-    return new Response(JSON.stringify({ result }), {
+    return new Response(JSON.stringify({ result: text }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
