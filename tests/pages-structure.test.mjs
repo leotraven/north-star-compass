@@ -198,6 +198,38 @@ test("strategy.astro selected core values area is hidden before selection", () =
   );
 });
 
+test("strategy.astro includes a choose vision button", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("Choose Vision"),
+    "strategy page must include a 'Choose Vision' button"
+  );
+});
+
+test("strategy.astro includes an edit vision button for later updates", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("Edit Vision"),
+    "strategy page must include an 'Edit Vision' button for later edits"
+  );
+});
+
+test("strategy.astro vision editor uses the current default vision text", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="vision-input"') && src.includes("Healthy, fulfilled, and free"),
+    "vision editor should be initialized with the existing default vision text"
+  );
+});
+
+test("strategy.astro selected vision area is hidden before choosing vision", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="selected-vision"') && src.includes("hidden"),
+    "selected vision should be hidden until user chooses a vision"
+  );
+});
+
 // ── Create Strategy page ──────────────────────────────────────────────────────
 
 test("create-strategy.astro exists", () => {

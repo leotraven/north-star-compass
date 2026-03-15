@@ -50,6 +50,9 @@ const goals = [
   { title: "Read 24 books this year", deadline: "Dec 31, 2026" },
   { title: "Launch my personal project", deadline: "Aug 15, 2026" },
 ];
+
+const defaultVision =
+  "Healthy, fulfilled, and free - doing work that matters, surrounded by people I love, with time and energy to pursue what brings me alive.";
 ---
 
 <BaseLayout>
@@ -130,14 +133,52 @@ const goals = [
 
     <!-- Vision -->
     <div class="rounded-xl border border-primary/20 bg-card p-6">
-      <div class="flex items-center gap-2 mb-3">
-        <div class="w-2 h-2 rounded-full bg-primary"></div>
-        <h3 class="font-semibold text-sm uppercase tracking-wider text-primary">Vision</h3>
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 class="font-semibold text-sm uppercase tracking-wider text-primary">Vision</h3>
+        </div>
+        <button
+          id="edit-vision-btn"
+          type="button"
+          class="hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors"
+        >
+          Edit Vision
+        </button>
       </div>
-      <p class="leading-relaxed text-muted-foreground text-sm mb-2 italic">An inspiring picture of your ideal life 3–5 years from now</p>
-      <p class="leading-relaxed" id="vision-text">
-        Healthy, fulfilled, and free — doing work that matters, surrounded by people I love, with time and energy to pursue what brings me alive.
-      </p>
+
+      <div id="vision-empty-state" class="space-y-3">
+        <p class="leading-relaxed text-muted-foreground text-sm italic">An inspiring picture of your ideal life 3-5 years from now.</p>
+        <button
+          id="choose-vision-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Choose Vision
+        </button>
+      </div>
+
+      <div id="vision-editor" class="hidden space-y-4 rounded-lg border border-border p-4">
+        <p class="text-sm text-muted-foreground">Write or refine your long-term vision.</p>
+        <textarea
+          id="vision-input"
+          rows="4"
+          class="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:border-primary"
+        >{defaultVision}</textarea>
+        <div class="flex justify-end">
+          <button
+            id="save-vision-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            Save Vision
+          </button>
+        </div>
+      </div>
+
+      <div id="selected-vision" class="hidden mt-4 rounded-lg bg-primary/5 border border-primary/20 p-4">
+        <p id="selected-vision-text" class="leading-relaxed"></p>
+      </div>
     </div>
 
     <!-- Life Pillars -->
@@ -242,6 +283,14 @@ const goals = [
     const selectedGrid = document.getElementById("selected-core-values-grid");
     const limitMessage = document.getElementById("core-values-limit-message");
     const checkboxes = Array.from(document.querySelectorAll(".core-value-option"));
+    const chooseVisionBtn = document.getElementById("choose-vision-btn");
+    const editVisionBtn = document.getElementById("edit-vision-btn");
+    const saveVisionBtn = document.getElementById("save-vision-btn");
+    const visionEmptyState = document.getElementById("vision-empty-state");
+    const visionEditor = document.getElementById("vision-editor");
+    const selectedVision = document.getElementById("selected-vision");
+    const selectedVisionText = document.getElementById("selected-vision-text");
+    const visionInput = document.getElementById("vision-input");
 
     const openOptions = () => {
       optionsPanel?.classList.remove("hidden");
@@ -294,6 +343,28 @@ const goals = [
       renderSelectedValues(selectedValues);
       optionsPanel?.classList.add("hidden");
       emptyState?.classList.add("hidden");
+    });
+
+    const openVisionEditor = () => {
+      visionEditor?.classList.remove("hidden");
+      visionEmptyState?.classList.add("hidden");
+    };
+
+    const renderVision = (vision) => {
+      if (!selectedVision || !selectedVisionText) return;
+      selectedVisionText.textContent = vision;
+      selectedVision.classList.toggle("hidden", !vision);
+      editVisionBtn?.classList.toggle("hidden", !vision);
+    };
+
+    chooseVisionBtn?.addEventListener("click", openVisionEditor);
+    editVisionBtn?.addEventListener("click", openVisionEditor);
+
+    saveVisionBtn?.addEventListener("click", () => {
+      const vision = visionInput?.value.trim() || visionInput?.defaultValue || "";
+      renderVision(vision);
+      visionEditor?.classList.add("hidden");
+      visionEmptyState?.classList.add("hidden");
     });
 
     updateSelectionState();
