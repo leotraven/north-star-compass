@@ -352,6 +352,66 @@ test("strategy.astro Goals header uses h3 matching Core Values style", () => {
   );
 });
 
+// ── evaluate.ts API ───────────────────────────────────────────────────────────
+
+test("evaluate.ts system prompt requests structured JSON with vision, coreValues and goals scores", () => {
+  const src = readFileSync(join(root, "src/pages/api/evaluate.ts"), "utf8");
+  assert.ok(
+    src.includes('"vision"') && src.includes('"coreValues"') && src.includes('"goals"'),
+    "evaluate.ts system prompt must instruct the model to return JSON keys: vision, coreValues, goals"
+  );
+});
+
+test("evaluate.ts accepts vision, coreValues, goals and action in request body", () => {
+  const src = readFileSync(join(root, "src/pages/api/evaluate.ts"), "utf8");
+  assert.ok(
+    src.includes("vision") && src.includes("coreValues") && src.includes("goals") && src.includes("action"),
+    "evaluate.ts must destructure vision, coreValues, goals and action from the request body"
+  );
+});
+
+test("evaluate.ts returns application/json content type", () => {
+  const src = readFileSync(join(root, "src/pages/api/evaluate.ts"), "utf8");
+  assert.ok(
+    src.includes("application/json"),
+    "evaluate.ts must set Content-Type: application/json on successful response"
+  );
+});
+
+// ── Strategy page result rendering ───────────────────────────────────────────
+
+test("strategy.astro result area has a vision score element", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="result-vision"'),
+    "strategy page must have a result element with id result-vision"
+  );
+});
+
+test("strategy.astro result area has a coreValues score element", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="result-core-values"'),
+    "strategy page must have a result element with id result-core-values"
+  );
+});
+
+test("strategy.astro result area has a goals score container", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="result-goals"'),
+    "strategy page must have a result container with id result-goals for per-goal scores"
+  );
+});
+
+test("strategy.astro sends vision, coreValues and goals in the analyze payload", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("coreValues") && src.includes("vision") && src.includes("goals"),
+    "strategy page script must include coreValues, vision and goals in the payload sent to /api/evaluate"
+  );
+});
+
 // ── Create Strategy page ──────────────────────────────────────────────────────
 
 test("create-strategy.astro exists", () => {

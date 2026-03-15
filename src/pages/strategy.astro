@@ -193,10 +193,16 @@ const defaultVision =
         </button>
         <div id="strategy-loading" class="hidden text-sm text-muted-foreground">Analyzing…</div>
         <p id="strategy-error" class="hidden text-sm text-red-400"></p>
-        <div id="strategy-result" class="hidden rounded-lg border border-border bg-background px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap"></div>
+        <div id="strategy-result" class="hidden space-y-3">
+          <div id="result-vision" class="rounded-lg border border-border bg-background px-4 py-3 space-y-1"></div>
+          <div id="result-core-values" class="rounded-lg border border-border bg-background px-4 py-3 space-y-1"></div>
+          <div id="result-goals" class="space-y-2"></div>
+        </div>
       </div>
     </div>
   </main>
+
+  <script type="application/json" id="page-goals-data" set:html={JSON.stringify(goals)}></script>
 
   <script>
     // @ts-nocheck
@@ -296,12 +302,35 @@ const defaultVision =
 
     updateSelectionState();
 
-    const STORAGE_KEY = "north-star-strategy";
     const strategyActionEl = document.getElementById("strategy-action");
     const strategyAnalyzeBtn = document.getElementById("strategy-analyze-btn");
     const strategyLoading = document.getElementById("strategy-loading");
     const strategyError = document.getElementById("strategy-error");
     const strategyResult = document.getElementById("strategy-result");
+    const resultVisionEl = document.getElementById("result-vision");
+    const resultCoreValuesEl = document.getElementById("result-core-values");
+    const resultGoalsEl = document.getElementById("result-goals");
+
+    const getPageVision = () => {
+      const saved = document.getElementById("selected-vision-text");
+      if (saved && !selectedVision?.classList.contains("hidden")) {
+        return saved.textContent?.trim() || "";
+      }
+      return visionInput?.value?.trim() || visionInput?.defaultValue || "";
+    };
+
+    const getPageCoreValues = () =>
+      checkboxes.filter((cb) => cb.checked).map((cb) => cb.value);
+
+    const renderScoreCard = (container, title, score, explanation) => {
+      container.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium">${title}</span>
+          <span class="text-sm font-semibold text-primary">${score}/10</span>
+        </div>
+        <p class="text-xs text-muted-foreground">${explanation}</p>
+      `;
+    };
 
     strategyAnalyzeBtn?.addEventListener("click", async () => {
       const action = strategyActionEl?.value?.trim();
@@ -310,9 +339,12 @@ const defaultVision =
         return;
       }
 
-      const storedStrategy = localStorage.getItem(STORAGE_KEY);
-      const strategy = storedStrategy ??
-        "Build a sustainable, profitable business that delivers real value to customers and enables long-term growth.";
+      const vision = getPageVision();
+      const coreValues = getPageCoreValues();
+      const goalsData = JSON.parse(
+        document.getElementById("page-goals-data")?.textContent || "[]"
+      );
+      const goals = goalsData.map((g) => ({ title: g.title }));
 
       strategyAnalyzeBtn.disabled = true;
       strategyResult?.classList.add("hidden");
@@ -323,7 +355,7 @@ const defaultVision =
         const res = await fetch("/api/evaluate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ strategy, action }),
+          body: JSON.stringify({ vision, coreValues, goals, action }),
         });
 
         if (!res.ok) {
@@ -331,11 +363,31 @@ const defaultVision =
           throw new Error(err.error ?? `HTTP ${res.status}`);
         }
 
-        const text = await res.text();
-        if (strategyResult) {
-          strategyResult.textContent = text;
-          strategyResult.classList.remove("hidden");
+        const data = await res.json();
+
+        if (resultVisionEl && data.vision) {
+          renderScoreCard(resultVisionEl, "Vision", data.vision.score, data.vision.explanation);
         }
+        if (resultCoreValuesEl && data.coreValues) {
+          renderScoreCard(resultCoreValuesEl, "Core Values", data.coreValues.score, data.coreValues.explanation);
+        }
+        if (resultGoalsEl && Array.isArray(data.goals)) {
+          resultGoalsEl.innerHTML = "";
+          data.goals.forEach((goal) => {
+            const card = document.createElement("div");
+            card.className = "rounded-lg border border-border bg-background px-4 py-3 space-y-1";
+            card.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">${goal.title}</span>
+                <span class="text-sm font-semibold text-primary">${goal.score}/10</span>
+              </div>
+              <p class="text-xs text-muted-foreground">${goal.explanation}</p>
+            `;
+            resultGoalsEl.appendChild(card);
+          });
+        }
+
+        strategyResult?.classList.remove("hidden");
       } catch (err) {
         if (strategyError) {
           strategyError.textContent = `Error: ${err.message}`;
