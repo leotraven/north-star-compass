@@ -11,8 +11,26 @@ import Compass from "../components/landing/Compass.astro";
   <section class="px-4 sm:px-8 py-12 border-t border-border">
     <div class="max-w-2xl mx-auto rounded-xl border border-border bg-card p-6">
       <h3 class="font-semibold mb-2">Your Strategy</h3>
-        <p class="text-sm text-muted-foreground mb-4">Add your vision, values, and plan.</p>
-      <a href="/strategy" class="text-sm text-primary hover:underline">View strategy →</a>
+      <p class="text-sm text-muted-foreground mb-4">Add your vision, values, and plan.</p>
+      <button id="view-strategy-btn" class="text-sm text-primary hover:underline">View strategy →</button>
     </div>
   </section>
+
+  <dialog id="wip-dialog" class="rounded-xl border border-border bg-card p-6 shadow-lg backdrop:bg-black/40 max-w-sm w-full fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0">
+    <h2 class="font-semibold text-base mb-2">Still in development</h2>
+    <p class="text-sm text-muted-foreground mb-4">This feature is not available yet. Check back soon!</p>
+    <button id="wip-close-btn" class="text-sm text-primary hover:underline">Close</button>
+  </dialog>
+
+  <script>
+    const btn = document.getElementById("view-strategy-btn");
+    const dialog = document.getElementById("wip-dialog") as HTMLDialogElement;
+    const closeBtn = document.getElementById("wip-close-btn");
+
+    btn?.addEventListener("click", () => dialog.showModal());
+    closeBtn?.addEventListener("click", () => dialog.close());
+    dialog?.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  </script>
 </BaseLayout>
