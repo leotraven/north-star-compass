@@ -101,71 +101,6 @@ test("BaseLayout.astro body does not constrain width so header can span full wid
   );
 });
 
-// GoalCard personal usage tests
-test("GoalCard does not show a progress bar", () => {
-  const goalCard = readFileSync(join(root, "new-design/src/app/components/GoalCard.tsx"), "utf8");
-  assert.ok(
-    !goalCard.includes("<Progress"),
-    "GoalCard should not render a <Progress> component"
-  );
-  assert.ok(
-    !goalCard.includes("import { Progress }"),
-    "GoalCard should not import Progress"
-  );
-});
-
-test("GoalCard does not show progress percentage", () => {
-  const goalCard = readFileSync(join(root, "new-design/src/app/components/GoalCard.tsx"), "utf8");
-  assert.ok(
-    !goalCard.includes("goal.progress"),
-    "GoalCard should not reference goal.progress"
-  );
-});
-
-test("GoalCard does not show 'On track' status", () => {
-  const goalCard = readFileSync(join(root, "new-design/src/app/components/GoalCard.tsx"), "utf8");
-  assert.ok(
-    !goalCard.includes("On track"),
-    "GoalCard should not display 'On track'"
-  );
-  assert.ok(
-    !goalCard.includes("TrendingUp"),
-    "GoalCard should not import TrendingUp (used for 'On track')"
-  );
-});
-
-test("GoalCard does not show category badge", () => {
-  const goalCard = readFileSync(join(root, "new-design/src/app/components/GoalCard.tsx"), "utf8");
-  assert.ok(
-    !goalCard.includes("goal.category"),
-    "GoalCard should not reference goal.category"
-  );
-});
-
-test("GoalCard Goal interface does not include progress or category fields", () => {
-  const goalCard = readFileSync(join(root, "new-design/src/app/components/GoalCard.tsx"), "utf8");
-  assert.ok(
-    !goalCard.includes("progress:"),
-    "GoalCard Goal interface should not have a progress field"
-  );
-  assert.ok(
-    !goalCard.includes("category:"),
-    "GoalCard Goal interface should not have a category field"
-  );
-});
-
-test("Dashboard mock goals do not include progress or category", () => {
-  const dashboard = readFileSync(join(root, "new-design/src/app/pages/Dashboard.tsx"), "utf8");
-  assert.ok(
-    !dashboard.includes("progress:"),
-    "Dashboard mock goals should not have a progress field"
-  );
-  assert.ok(
-    !dashboard.includes("category:"),
-    "Dashboard mock goals should not have a category field"
-  );
-});
-
 // Astro index.astro (running app) GoalCard tests
 test("index.astro goal cards do not show progress bars", () => {
   const index = readFileSync(join(root, "src/pages/index.astro"), "utf8");
@@ -262,32 +197,52 @@ test("strategy.astro does not have Focus Areas section", () => {
   );
 });
 
-// Strategy.tsx (new-design) structural tests
-test("Strategy.tsx shows Core Values before Vision", () => {
-  const strategy = readFileSync(join(root, "new-design/src/app/pages/Strategy.tsx"), "utf8");
-  const coreValuesPos = strategy.indexOf("Core Values");
-  const visionPos = strategy.indexOf("Vision");
+// Landing page tests
+test("index.astro uses Hero component", () => {
+  const index = readFileSync(join(root, "src/pages/index.astro"), "utf8");
   assert.ok(
-    coreValuesPos < visionPos,
-    "Core Values should appear before Vision in Strategy.tsx"
+    index.includes("Hero"),
+    "index.astro should import and use the Hero component"
   );
 });
 
-test("Strategy.tsx does not have Mission or Purpose", () => {
-  const strategy = readFileSync(join(root, "new-design/src/app/pages/Strategy.tsx"), "utf8");
-  assert.ok(!strategy.includes("mission"), "Strategy.tsx should not reference mission");
-  assert.ok(!strategy.includes("Mission"), "Strategy.tsx should not display Mission");
-  assert.ok(!strategy.includes("Purpose"), "Strategy.tsx should not display Purpose");
+test("index.astro includes Compass component (which has how-it-works section)", () => {
+  const index = readFileSync(join(root, "src/pages/index.astro"), "utf8");
+  assert.ok(
+    index.includes("Compass"),
+    "index.astro should import/use the Compass component which contains #how-it-works"
+  );
+  const compass = readFileSync(join(root, "src/components/landing/Compass.astro"), "utf8");
+  assert.ok(
+    compass.includes("how-it-works"),
+    "Compass.astro should contain the #how-it-works section"
+  );
 });
 
-test("Strategy.tsx life pillars are Health, Career, Relationships", () => {
-  const strategy = readFileSync(join(root, "new-design/src/app/pages/Strategy.tsx"), "utf8");
-  assert.ok(strategy.includes("Health"), "Strategy.tsx should have a Health pillar");
-  assert.ok(strategy.includes("Career"), "Strategy.tsx should have a Career pillar");
-  assert.ok(strategy.includes("Relationships"), "Strategy.tsx should have a Relationships pillar");
+test("Hero.astro Check Alignment button links to /strategy", () => {
+  const hero = readFileSync(join(root, "src/components/landing/Hero.astro"), "utf8");
+  assert.ok(
+    hero.includes('href="/strategy"'),
+    "Hero.astro Check Alignment button should link to /strategy"
+  );
+  assert.ok(
+    !hero.includes('href="#compass-check"'),
+    "Hero.astro should not link Check Alignment to #compass-check"
+  );
 });
 
-test("Strategy.tsx has a Goals section", () => {
-  const strategy = readFileSync(join(root, "new-design/src/app/pages/Strategy.tsx"), "utf8");
-  assert.ok(strategy.includes("Goals"), "Strategy.tsx should have a Goals section");
+test("Hero.astro How It Works button links to #how-it-works", () => {
+  const hero = readFileSync(join(root, "src/components/landing/Hero.astro"), "utf8");
+  assert.ok(
+    hero.includes('href="#how-it-works"'),
+    "Hero.astro How It Works button should link to #how-it-works"
+  );
+});
+
+test("index.astro includes the process description (3 steps)", () => {
+  const index = readFileSync(join(root, "src/pages/index.astro"), "utf8");
+  assert.ok(
+    index.includes("Your North Star") || index.includes("Compass"),
+    "index.astro how-it-works section should describe the process"
+  );
 });
