@@ -5,11 +5,14 @@ import { generateText } from "ai";
 const DEBUG = import.meta.env.LOG_LEVEL === "debug";
 const log = (...args: unknown[]) => { if (DEBUG) console.log("[evaluate]", ...args); };
 
-const LEGACY_SYSTEM_PROMPT = `You are an expert strategic advisor. Evaluate whether the user's immediate action aligns with their long-term strategy. Be objective, slightly ruthless, and highly analytical. Format your response strictly with:
-1. Alignment Score (1-10)
-2. The Verdict (One sentence)
-3. The 'Why' (Brief explanation)
-4. Strategic Alternative (If needed)`;
+const LEGACY_SYSTEM_PROMPT = `You are an expert strategic advisor. Evaluate whether the user's immediate action aligns with their long-term strategy. Be objective, slightly ruthless, and highly analytical. Format your response strictly as:
+
+**Alignment Score:** <number 1-10>
+**Verdict:** <one sentence>
+**Why:** <brief explanation>
+**Strategic Alternative:** <concrete alternative if needed>
+
+Use exactly these labels with the ** markdown bold syntax. No numbered lists, no other formatting.`;
 
 const STRUCTURED_SYSTEM_PROMPT =
   "You are a strategic alignment advisor. Evaluate whether the given action aligns with the user's personal strategy. Be objective and concise.";

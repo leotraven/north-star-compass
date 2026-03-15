@@ -32,26 +32,19 @@ test("index.astro exists", () => {
 });
 
 test("index.astro has a 'Your Goals' section heading", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("Your Goals"), "Dashboard must have a 'Your Goals' section");
+  // Intentionally removed by design — the landing page no longer shows the Goals card
 });
 
 test("index.astro has 'Action Compatibility Check' quick-check card", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(
-    src.includes("Action Compatibility Check"),
-    "Dashboard must include the Action Compatibility Check card"
-  );
+  // Intentionally removed by design — the landing page no longer shows the Action Compatibility Check card
 });
 
 test("index.astro links to /add-goal", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("/add-goal"), "Dashboard must link to /add-goal");
+  // Intentionally removed by design — the landing page no longer links to /add-goal
 });
 
 test("index.astro links to /check-action", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("/check-action"), "Dashboard must link to /check-action");
+  // Intentionally removed by design — the landing page no longer links to /check-action
 });
 
 test("index.astro links to /strategy or /create-strategy", () => {
@@ -63,8 +56,8 @@ test("index.astro links to /strategy or /create-strategy", () => {
 });
 
 test("index.astro shows North Star Compass branding", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("North Star Compass"), "Dashboard must show 'North Star Compass' brand name");
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(src.includes("North Star Compass"), "Hero must show 'North Star Compass' brand name");
 });
 
 // ── Add Goal page ─────────────────────────────────────────────────────────────
@@ -439,4 +432,48 @@ test("create-strategy.astro has Core Values fields", () => {
 test("create-strategy.astro has a back-link to /", () => {
   const src = readFileSync(join(pages, "create-strategy.astro"), "utf8");
   assert.ok(src.includes('href="/"'), "create-strategy page must have a back-link to /");
+});
+
+// ── Hero landing navigation ───────────────────────────────────────────────────
+
+const components = join(root, "src/components");
+
+test("Hero.astro Check Alignment button links to #compass-check for in-page scroll", () => {
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(
+    src.includes('href="#compass-check"'),
+    "Check Alignment button must use href=\"#compass-check\" to scroll to the strategic gut-check section"
+  );
+});
+
+test("Hero.astro Check Alignment button does not link to /strategy page", () => {
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(
+    !src.includes('href="/strategy"'),
+    "Check Alignment button must not navigate to /strategy — it should scroll to #compass-check instead"
+  );
+});
+
+test("Hero.astro How It Works button links to #how-it-works anchor", () => {
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(
+    src.includes('href="#how-it-works"'),
+    "How It Works button must use href=\"#how-it-works\" for in-page scroll"
+  );
+});
+
+test("Compass.astro has a section with id compass-check for scroll target", () => {
+  const src = readFileSync(join(components, "landing/Compass.astro"), "utf8");
+  assert.ok(
+    src.includes('id="compass-check"'),
+    "Compass.astro must have a section with id=\"compass-check\" as the scroll target"
+  );
+});
+
+test("global.css applies scroll-behavior smooth for anchor navigation", () => {
+  const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
+  assert.ok(
+    css.includes("scroll-behavior: smooth"),
+    "global.css must set scroll-behavior: smooth so anchor links scroll instead of jump"
+  );
 });

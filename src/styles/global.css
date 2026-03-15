@@ -42,6 +42,10 @@
   --border: oklch(0.269 0 0);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   min-height: 100%;
