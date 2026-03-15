@@ -78,14 +78,53 @@ test("add-goal.astro has a form with a goal title field", () => {
   assert.ok(src.includes("Goal Title"), "add-goal page must have a 'Goal Title' field");
 });
 
-test("add-goal.astro has a description field", () => {
+test("add-goal.astro does not have a description field", () => {
   const src = readFileSync(join(pages, "add-goal.astro"), "utf8");
-  assert.ok(src.includes("description") || src.includes("Description"), "add-goal page must have a description field");
+  assert.ok(
+    !src.includes("Description") && !src.includes('name="description"'),
+    "add-goal page should not have a description field"
+  );
 });
 
-test("add-goal.astro has a category select field", () => {
+test("add-goal.astro has a life pillar select field", () => {
   const src = readFileSync(join(pages, "add-goal.astro"), "utf8");
-  assert.ok(src.includes("Category") || src.includes("category"), "add-goal page must have a category field");
+  assert.ok(
+    src.includes("Life Pillar") && src.includes('name="lifePillar"'),
+    "add-goal page must have a life pillar field to categorize goals"
+  );
+});
+
+test("add-goal.astro has life pillar info button and popup content", () => {
+  const src = readFileSync(join(pages, "add-goal.astro"), "utf8");
+  assert.ok(
+    src.includes("life-pillars-info-btn") && src.includes("life-pillars-popup"),
+    "add-goal page must have an info button that opens life pillar guidance"
+  );
+  assert.ok(
+    src.includes("Core values") || src.includes("core values"),
+    "life pillar popup should explain how pillars differ from core values"
+  );
+  assert.ok(
+    !src.includes("Key Areas"),
+    "life pillar popup should not contain key areas"
+  );
+});
+
+test("add-goal.astro includes expanded life pillar options", () => {
+  const src = readFileSync(join(pages, "add-goal.astro"), "utf8");
+  assert.ok(src.includes("Health"), "add-goal should include Health pillar option");
+  assert.ok(src.includes("Career"), "add-goal should include Career pillar option");
+  assert.ok(src.includes("Relationships"), "add-goal should include Relationships pillar option");
+  assert.ok(src.includes("Finance"), "add-goal should include Finance pillar option");
+  assert.ok(src.includes("Personal Growth"), "add-goal should include Personal Growth pillar option");
+});
+
+test("add-goal.astro does not have target metric and current value fields", () => {
+  const src = readFileSync(join(pages, "add-goal.astro"), "utf8");
+  assert.ok(
+    !src.includes("Target Metric") && !src.includes("Current Value"),
+    "add-goal page should not have target metric or current value fields"
+  );
 });
 
 test("add-goal.astro has a deadline field", () => {
@@ -227,6 +266,47 @@ test("strategy.astro selected vision area is hidden before choosing vision", () 
   assert.ok(
     src.includes('id="selected-vision"') && src.includes("hidden"),
     "selected vision should be hidden until user chooses a vision"
+  );
+});
+
+test("strategy.astro does not include a life pillars section", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(!src.includes("Life Pillars"), "strategy page should not include a Life Pillars section");
+});
+
+test("strategy.astro Vision card uses border-border matching Core Values style", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  const visionIdx = src.indexOf("<!-- Vision -->");
+  const afterVision = src.slice(visionIdx, visionIdx + 80);
+  assert.ok(
+    afterVision.includes("border-border"),
+    "Vision card container should use border-border like Core Values, not border-primary/20"
+  );
+});
+
+test("strategy.astro Vision header matches Core Values plain h3 style", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('<h3 class="font-semibold">Vision</h3>'),
+    "Vision header should use the same plain h3 font-semibold style as Core Values"
+  );
+});
+
+test("strategy.astro Goals section is wrapped in a card matching Core Values style", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  const goalsIdx = src.indexOf("<!-- Goals -->");
+  const afterGoals = src.slice(goalsIdx, goalsIdx + 100);
+  assert.ok(
+    afterGoals.includes("rounded-xl border border-border bg-card"),
+    "Goals section should be wrapped in a card with the same style as Core Values"
+  );
+});
+
+test("strategy.astro Goals header uses h3 matching Core Values style", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('<h3 class="font-semibold">Goals</h3>'),
+    "Goals header should use the same plain h3 font-semibold style as Core Values"
   );
 });
 

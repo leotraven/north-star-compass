@@ -167,11 +167,12 @@ test("strategy.astro does not have a Purpose section", () => {
   );
 });
 
-test("strategy.astro life pillars are Health, Career, Relationships", () => {
+test("strategy.astro does not include life pillars section", () => {
   const strategy = readFileSync(join(root, "src/pages/strategy.astro"), "utf8");
-  assert.ok(strategy.includes("Health"), "strategy.astro should have a Health pillar");
-  assert.ok(strategy.includes("Career"), "strategy.astro should have a Career pillar");
-  assert.ok(strategy.includes("Relationships"), "strategy.astro should have a Relationships pillar");
+  assert.ok(
+    !strategy.includes("Life Pillars"),
+    "strategy.astro should not include a Life Pillars section"
+  );
 });
 
 test("strategy.astro does not have corporate pillar titles", () => {

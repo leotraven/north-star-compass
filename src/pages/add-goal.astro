@@ -40,19 +40,36 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           />
         </div>
 
-        <!-- Description -->
-        <div class="space-y-2">
-          <label for="description" class="block text-sm font-medium">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            rows="4"
-            placeholder="Provide additional context about this goal..."
-            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
-          ></textarea>
-        </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Life Pillar -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <label for="lifePillar" class="block text-sm font-medium">Life Pillar <span class="text-primary">*</span></label>
+              <button
+                id="life-pillars-info-btn"
+                type="button"
+                class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                aria-label="Learn about life pillars"
+              >
+                i
+              </button>
+            </div>
+            <select
+              id="lifePillar"
+              name="lifePillar"
+              required
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+            >
+              <option value="">Select a life pillar</option>
+              <option value="Health">Health</option>
+              <option value="Career">Career</option>
+              <option value="Relationships">Relationships</option>
+              <option value="Finance">Finance</option>
+              <option value="Personal Growth">Personal Growth</option>
+              <option value="Community">Community</option>
+            </select>
+          </div>
+
           <!-- Deadline -->
           <div class="space-y-2">
             <label for="deadline" class="block text-sm font-medium">Deadline <span class="text-primary">*</span></label>
@@ -62,32 +79,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               type="date"
               required
               class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
-            />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Target Metric -->
-          <div class="space-y-2">
-            <label for="targetMetric" class="block text-sm font-medium">Target Metric</label>
-            <input
-              id="targetMetric"
-              name="targetMetric"
-              type="text"
-              placeholder="e.g., $10M ARR"
-              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-            />
-          </div>
-
-          <!-- Current Value -->
-          <div class="space-y-2">
-            <label for="currentValue" class="block text-sm font-medium">Current Value</label>
-            <input
-              id="currentValue"
-              name="currentValue"
-              type="text"
-              placeholder="e.g., $4.5M ARR"
-              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
             />
           </div>
         </div>
@@ -109,10 +100,64 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </form>
     </div>
   </main>
+
+  <div
+    id="life-pillars-popup"
+    class="hidden fixed inset-0 z-50 bg-black/40 px-6 py-10"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="life-pillars-popup-title"
+  >
+    <div class="max-w-xl mx-auto rounded-xl border border-border bg-card p-6 space-y-4">
+      <div class="flex items-center justify-between gap-3">
+        <h2 id="life-pillars-popup-title" class="text-lg font-semibold">Life Pillars</h2>
+        <button
+          id="life-pillars-close-btn"
+          type="button"
+          class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          aria-label="Close life pillars popup"
+        >
+          x
+        </button>
+      </div>
+
+      <p class="text-sm text-muted-foreground">
+        Life pillars are the major areas of your life where goals belong. Core values are your guiding principles, while life pillars are the buckets you organize goals into.
+      </p>
+
+      <div class="space-y-3 text-sm text-muted-foreground">
+        <p><span class="font-medium text-foreground">Health:</span> Physical and mental wellbeing that supports your energy and consistency.</p>
+        <p><span class="font-medium text-foreground">Career:</span> Professional growth, meaningful work, and long-term contribution.</p>
+        <p><span class="font-medium text-foreground">Relationships:</span> Family, friendships, and connections you actively nurture.</p>
+        <p><span class="font-medium text-foreground">Finance:</span> Financial stability, savings, and responsible money decisions.</p>
+        <p><span class="font-medium text-foreground">Personal Growth:</span> Learning, mindset, and skills that help you evolve over time.</p>
+        <p><span class="font-medium text-foreground">Community:</span> Contribution, service, and meaningful participation beyond yourself.</p>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
 
 <script>
+  // @ts-nocheck
   const form = document.getElementById("add-goal-form") as HTMLFormElement;
+  const lifePillarsInfoBtn = document.getElementById("life-pillars-info-btn");
+  const lifePillarsPopup = document.getElementById("life-pillars-popup");
+  const lifePillarsCloseBtn = document.getElementById("life-pillars-close-btn");
+
+  lifePillarsInfoBtn?.addEventListener("click", () => {
+    lifePillarsPopup?.classList.remove("hidden");
+  });
+
+  lifePillarsCloseBtn?.addEventListener("click", () => {
+    lifePillarsPopup?.classList.add("hidden");
+  });
+
+  lifePillarsPopup?.addEventListener("click", (e) => {
+    if (e.target === lifePillarsPopup) {
+      lifePillarsPopup.classList.add("hidden");
+    }
+  });
+
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
