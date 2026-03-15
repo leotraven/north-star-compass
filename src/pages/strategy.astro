@@ -6,6 +6,10 @@ const coreValues = [
   "Growth",
   "Family",
   "Balance",
+  "Courage",
+  "Learning",
+  "Service",
+  "Creativity",
 ];
 
 const pillars = [
@@ -69,26 +73,58 @@ const goals = [
           </div>
         </div>
       </div>
-      <a href="/create-strategy" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-        Edit Strategy
-      </a>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-6 py-8 space-y-8">
     <!-- Core Values -->
     <div class="rounded-xl border border-border bg-card p-6">
-      <h3 class="font-semibold mb-4">Core Values</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {coreValues.map((value) => (
-          <div class="px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 text-center">
-            <span class="font-medium text-sm">{value}</span>
-          </div>
-        ))}
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Core Values</h3>
+        <button
+          id="edit-core-values-btn"
+          type="button"
+          class="hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors"
+        >
+          Edit Core Values
+        </button>
+      </div>
+
+      <div id="core-values-empty-state" class="space-y-3">
+        <p class="text-sm text-muted-foreground">Start your strategy by choosing your core values.</p>
+        <button
+          id="choose-core-values-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Choose Core Values
+        </button>
+      </div>
+
+      <div id="core-value-options" class="hidden space-y-4 rounded-lg border border-border p-4">
+        <p class="text-sm text-muted-foreground">Select up to 3 core values.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {coreValues.map((value) => (
+            <label class="px-3 py-2 rounded-lg border border-border hover:border-primary/50 cursor-pointer text-sm">
+              <input type="checkbox" class="mr-2 core-value-option" value={value} />
+              <span>{value}</span>
+            </label>
+          ))}
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <p id="core-values-limit-message" class="text-xs text-muted-foreground">You can choose up to 3 values.</p>
+          <button
+            id="save-core-values-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            Save Core Values
+          </button>
+        </div>
+      </div>
+
+      <div id="selected-core-values" class="hidden mt-4">
+        <div id="selected-core-values-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
       </div>
     </div>
 
@@ -193,4 +229,73 @@ const goals = [
       </div>
     </div>
   </main>
+
+  <script>
+    // @ts-nocheck
+    const maxCoreValues = 3;
+    const chooseBtn = document.getElementById("choose-core-values-btn");
+    const editBtn = document.getElementById("edit-core-values-btn");
+    const saveBtn = document.getElementById("save-core-values-btn");
+    const emptyState = document.getElementById("core-values-empty-state");
+    const optionsPanel = document.getElementById("core-value-options");
+    const selectedSection = document.getElementById("selected-core-values");
+    const selectedGrid = document.getElementById("selected-core-values-grid");
+    const limitMessage = document.getElementById("core-values-limit-message");
+    const checkboxes = Array.from(document.querySelectorAll(".core-value-option"));
+
+    const openOptions = () => {
+      optionsPanel?.classList.remove("hidden");
+      emptyState?.classList.add("hidden");
+    };
+
+    const renderSelectedValues = (values) => {
+      if (!selectedGrid || !selectedSection) return;
+      selectedGrid.innerHTML = "";
+
+      values.forEach((value) => {
+        const valueNode = document.createElement("div");
+        valueNode.className = "px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 text-center";
+        valueNode.innerHTML = `<span class=\"font-medium text-sm\">${value}</span>`;
+        selectedGrid.appendChild(valueNode);
+      });
+
+      selectedSection.classList.toggle("hidden", values.length === 0);
+      editBtn?.classList.toggle("hidden", values.length === 0);
+    };
+
+    const updateSelectionState = () => {
+      const selectedCount = checkboxes.filter((option) => option.checked).length;
+      const reachedLimit = selectedCount >= maxCoreValues;
+
+      checkboxes.forEach((option) => {
+        option.disabled = reachedLimit && !option.checked;
+      });
+
+      if (limitMessage) {
+        limitMessage.textContent = reachedLimit
+          ? "Maximum reached: you can only select 3 values."
+          : "You can choose up to 3 values.";
+      }
+    };
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", updateSelectionState);
+    });
+
+    chooseBtn?.addEventListener("click", openOptions);
+    editBtn?.addEventListener("click", openOptions);
+
+    saveBtn?.addEventListener("click", () => {
+      const selectedValues = checkboxes
+        .filter((option) => option.checked)
+        .slice(0, maxCoreValues)
+        .map((option) => option.value);
+
+      renderSelectedValues(selectedValues);
+      optionsPanel?.classList.add("hidden");
+      emptyState?.classList.add("hidden");
+    });
+
+    updateSelectionState();
+  </script>
 </BaseLayout>

@@ -158,9 +158,44 @@ test("strategy.astro has a back-link to /", () => {
   assert.ok(src.includes('href="/"'), "strategy page must have a back-link to /");
 });
 
-test("strategy.astro links to /create-strategy for editing", () => {
+test("strategy.astro does not include a page-level Edit Strategy button", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
-  assert.ok(src.includes("/create-strategy"), "strategy page must link to /create-strategy for editing");
+  assert.ok(
+    !src.includes("Edit Strategy"),
+    "strategy page should not include a generic 'Edit Strategy' button"
+  );
+});
+
+test("strategy.astro includes a choose core values button", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("Choose Core Values"),
+    "strategy page must include a 'Choose Core Values' button"
+  );
+});
+
+test("strategy.astro indicates max 3 core values can be selected", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("Select up to 3") || src.includes("Max 3"),
+    "strategy page must indicate that at most 3 core values can be selected"
+  );
+});
+
+test("strategy.astro has a dedicated edit button for selected core values", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("Edit Core Values"),
+    "strategy page must include an 'Edit Core Values' button for selected values"
+  );
+});
+
+test("strategy.astro selected core values area is hidden before selection", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="selected-core-values"') && src.includes("hidden"),
+    "selected core values should be hidden until user has chosen values"
+  );
 });
 
 // ── Create Strategy page ──────────────────────────────────────────────────────
