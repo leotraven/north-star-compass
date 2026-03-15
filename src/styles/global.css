@@ -14,10 +14,7 @@
   --color-base-925: oklch(17.8% 0.009 269.12);
   --color-base-950: oklch(13.8% 0.008 270.3);
 
-  --color-orange-300: oklch(83.7% 0.102 50.31);
-  --color-orange-400: oklch(76.1% 0.147 45.2);
-  --color-orange-500: oklch(69.2% 0.198 38.42);
-  --color-orange-600: oklch(60.6% 0.207 35.11);
+  --color-primary: #06b6d4;
 }
 
 :root {
@@ -33,6 +30,6 @@ body {
 
 body {
   background-image:
-    radial-gradient(circle at 15% 10%, color-mix(in oklab, var(--color-orange-600) 18%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 15% 10%, color-mix(in oklab, var(--color-primary) 18%, transparent) 0%, transparent 40%),
     radial-gradient(circle at 85% 0%, color-mix(in oklab, var(--color-base-700) 55%, transparent) 0%, transparent 48%);
 }
