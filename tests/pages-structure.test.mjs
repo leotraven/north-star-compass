@@ -440,3 +440,47 @@ test("create-strategy.astro has a back-link to /", () => {
   const src = readFileSync(join(pages, "create-strategy.astro"), "utf8");
   assert.ok(src.includes('href="/"'), "create-strategy page must have a back-link to /");
 });
+
+// ── Hero landing navigation ───────────────────────────────────────────────────
+
+const components = join(root, "src/components");
+
+test("Hero.astro Check Alignment button links to #compass-check for in-page scroll", () => {
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(
+    src.includes('href="#compass-check"'),
+    "Check Alignment button must use href=\"#compass-check\" to scroll to the strategic gut-check section"
+  );
+});
+
+test("Hero.astro Check Alignment button does not link to /strategy page", () => {
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(
+    !src.includes('href="/strategy"'),
+    "Check Alignment button must not navigate to /strategy — it should scroll to #compass-check instead"
+  );
+});
+
+test("Hero.astro How It Works button links to #how-it-works anchor", () => {
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(
+    src.includes('href="#how-it-works"'),
+    "How It Works button must use href=\"#how-it-works\" for in-page scroll"
+  );
+});
+
+test("Compass.astro has a section with id compass-check for scroll target", () => {
+  const src = readFileSync(join(components, "landing/Compass.astro"), "utf8");
+  assert.ok(
+    src.includes('id="compass-check"'),
+    "Compass.astro must have a section with id=\"compass-check\" as the scroll target"
+  );
+});
+
+test("global.css applies scroll-behavior smooth for anchor navigation", () => {
+  const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
+  assert.ok(
+    css.includes("scroll-behavior: smooth"),
+    "global.css must set scroll-behavior: smooth so anchor links scroll instead of jump"
+  );
+});
