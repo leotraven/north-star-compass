@@ -1,0 +1,404 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const coreValues = [
+  "Integrity",
+  "Growth",
+  "Family",
+  "Balance",
+  "Courage",
+  "Learning",
+  "Service",
+  "Creativity",
+];
+
+const goals = [
+  { title: "Run my first marathon", deadline: "Dec 31, 2026" },
+  { title: "Read 24 books this year", deadline: "Dec 31, 2026" },
+  { title: "Launch my personal project", deadline: "Aug 15, 2026" },
+];
+
+const visionDefault =
+  "Healthy, fulfilled, and free - doing work that matters, surrounded by people I love, with time and energy to pursue what brings me alive.";
+---
+
+<BaseLayout>
+  <header class="border-b border-border bg-card/80 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-card transition-colors" aria-label="Back to dashboard">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </a>
+        <div class="flex items-center gap-3">
+          <div class="bg-primary/10 p-2 rounded-lg">
+            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl font-semibold">Your Strategy</h1>
+            <p class="text-sm text-muted-foreground">North Star alignment framework</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8 space-y-8">
+    <!-- Core Values -->
+    <div class="rounded-xl border border-border bg-card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Core Values</h3>
+        <button
+          id="edit-core-values-btn"
+          type="button"
+          class="hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors"
+        >
+          Edit Core Values
+        </button>
+      </div>
+
+      <div id="core-values-empty-state" class="space-y-3">
+        <p class="text-sm text-muted-foreground">Start your strategy by choosing your core values.</p>
+        <button
+          id="choose-core-values-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Choose Core Values
+        </button>
+      </div>
+
+      <div id="core-value-options" class="hidden space-y-4 rounded-lg border border-border p-4">
+        <p class="text-sm text-muted-foreground">Select up to 3 core values.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {coreValues.map((value) => (
+            <label class="px-3 py-2 rounded-lg border border-border hover:border-primary/50 cursor-pointer text-sm">
+              <input type="checkbox" class="mr-2 core-value-option" value={value} />
+              <span>{value}</span>
+            </label>
+          ))}
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <p id="core-values-limit-message" class="text-xs text-muted-foreground">You can choose up to 3 values.</p>
+          <button
+            id="save-core-values-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            Save Core Values
+          </button>
+        </div>
+      </div>
+
+      <div id="selected-core-values" class="hidden mt-4">
+        <div id="selected-core-values-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+      </div>
+    </div>
+
+    <!-- Mission and Strategic Pillars flow from your core values and vision -->
+
+    <!-- Vision -->
+    <div class="rounded-xl border border-border bg-card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Vision</h3>
+        <button
+          id="edit-vision-btn"
+          type="button"
+          class="hidden inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors"
+        >
+          Edit Vision
+        </button>
+      </div>
+
+      <div id="vision-empty-state" class="space-y-3">
+        <p class="leading-relaxed text-muted-foreground text-sm italic">An inspiring picture of your ideal life 3-5 years from now.</p>
+        <button
+          id="choose-vision-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Choose Vision
+        </button>
+      </div>
+
+      <div id="vision-editor" class="hidden space-y-4 rounded-lg border border-border p-4">
+        <p class="text-sm text-muted-foreground">Write or refine your long-term vision.</p>
+        <textarea
+          id="vision-input"
+          rows="4"
+          class="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:border-primary"
+        >{visionDefault}</textarea>
+        <div class="flex justify-end">
+          <button
+            id="save-vision-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            Save Vision
+          </button>
+        </div>
+      </div>
+
+      <div id="selected-vision" class="hidden mt-4 rounded-lg bg-primary/5 border border-primary/20 p-4">
+        <p id="selected-vision-text" class="leading-relaxed"></p>
+      </div>
+    </div>
+
+    <!-- Goals -->
+    <div class="rounded-xl border border-border bg-card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Goals</h3>
+        <a href="/add-goal" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Goal
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {goals.map((goal) => (
+          <div class="rounded-xl border border-border bg-card p-5 hover:border-primary/50 transition-colors group">
+            <div class="flex items-center gap-1 text-xs text-muted-foreground mb-3">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              {goal.deadline}
+            </div>
+            <h3 class="font-semibold group-hover:text-primary transition-colors">{goal.title}</h3>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Strategy Alignment CTA -->
+    <div class="rounded-xl border border-border bg-card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Check Action Alignment</h3>
+      </div>
+      <div class="space-y-4">
+        <p class="text-sm text-muted-foreground">Describe an action or decision to evaluate whether it aligns with your strategy.</p>
+        <textarea
+          id="strategy-action"
+          rows="3"
+          placeholder="e.g., Should I accept this new partnership opportunity that will require 3 months of engineering focus?"
+          class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+        ></textarea>
+        <button
+          id="strategy-analyze-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Analyze Alignment
+        </button>
+        <div id="strategy-loading" class="hidden text-sm text-muted-foreground">Analyzing…</div>
+        <p id="strategy-error" class="hidden text-sm text-red-400"></p>
+        <div id="strategy-result" class="hidden space-y-3">
+          <div id="result-vision" class="rounded-lg border border-border bg-background px-4 py-3 space-y-1"></div>
+          <div id="result-core-values" class="rounded-lg border border-border bg-background px-4 py-3 space-y-1"></div>
+          <div id="result-goals" class="space-y-2"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="application/json" id="page-goals-data" set:html={JSON.stringify(goals)}></script>
+
+  <script>
+    // @ts-nocheck
+    const maxCoreValues = 3;
+    const chooseBtn = document.getElementById("choose-core-values-btn");
+    const editBtn = document.getElementById("edit-core-values-btn");
+    const saveBtn = document.getElementById("save-core-values-btn");
+    const emptyState = document.getElementById("core-values-empty-state");
+    const optionsPanel = document.getElementById("core-value-options");
+    const selectedSection = document.getElementById("selected-core-values");
+    const selectedGrid = document.getElementById("selected-core-values-grid");
+    const limitMessage = document.getElementById("core-values-limit-message");
+    const checkboxes = Array.from(document.querySelectorAll(".core-value-option"));
+    const chooseVisionBtn = document.getElementById("choose-vision-btn");
+    const editVisionBtn = document.getElementById("edit-vision-btn");
+    const saveVisionBtn = document.getElementById("save-vision-btn");
+    const visionEmptyState = document.getElementById("vision-empty-state");
+    const visionEditor = document.getElementById("vision-editor");
+    const selectedVision = document.getElementById("selected-vision");
+    const selectedVisionText = document.getElementById("selected-vision-text");
+    const visionInput = document.getElementById("vision-input");
+
+    const openOptions = () => {
+      optionsPanel?.classList.remove("hidden");
+      emptyState?.classList.add("hidden");
+    };
+
+    const renderSelectedValues = (values) => {
+      if (!selectedGrid || !selectedSection) return;
+      selectedGrid.innerHTML = "";
+
+      values.forEach((value) => {
+        const valueNode = document.createElement("div");
+        valueNode.className = "px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 text-center";
+        valueNode.innerHTML = `<span class=\"font-medium text-sm\">${value}</span>`;
+        selectedGrid.appendChild(valueNode);
+      });
+
+      selectedSection.classList.toggle("hidden", values.length === 0);
+      editBtn?.classList.toggle("hidden", values.length === 0);
+    };
+
+    const updateSelectionState = () => {
+      const selectedCount = checkboxes.filter((option) => option.checked).length;
+      const reachedLimit = selectedCount >= maxCoreValues;
+
+      checkboxes.forEach((option) => {
+        option.disabled = reachedLimit && !option.checked;
+      });
+
+      if (limitMessage) {
+        limitMessage.textContent = reachedLimit
+          ? "Maximum reached: you can only select 3 values."
+          : "You can choose up to 3 values.";
+      }
+    };
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", updateSelectionState);
+    });
+
+    chooseBtn?.addEventListener("click", openOptions);
+    editBtn?.addEventListener("click", openOptions);
+
+    saveBtn?.addEventListener("click", () => {
+      const selectedValues = checkboxes
+        .filter((option) => option.checked)
+        .slice(0, maxCoreValues)
+        .map((option) => option.value);
+
+      renderSelectedValues(selectedValues);
+      optionsPanel?.classList.add("hidden");
+      emptyState?.classList.add("hidden");
+    });
+
+    const openVisionEditor = () => {
+      visionEditor?.classList.remove("hidden");
+      visionEmptyState?.classList.add("hidden");
+    };
+
+    const renderVision = (vision) => {
+      if (!selectedVision || !selectedVisionText) return;
+      selectedVisionText.textContent = vision;
+      selectedVision.classList.toggle("hidden", !vision);
+      editVisionBtn?.classList.toggle("hidden", !vision);
+    };
+
+    chooseVisionBtn?.addEventListener("click", openVisionEditor);
+    editVisionBtn?.addEventListener("click", openVisionEditor);
+
+    saveVisionBtn?.addEventListener("click", () => {
+      const vision = visionInput?.value.trim() || visionInput?.defaultValue || "";
+      renderVision(vision);
+      visionEditor?.classList.add("hidden");
+      visionEmptyState?.classList.add("hidden");
+    });
+
+    updateSelectionState();
+
+    const strategyActionEl = document.getElementById("strategy-action");
+    const strategyAnalyzeBtn = document.getElementById("strategy-analyze-btn");
+    const strategyLoading = document.getElementById("strategy-loading");
+    const strategyError = document.getElementById("strategy-error");
+    const strategyResult = document.getElementById("strategy-result");
+    const resultVisionEl = document.getElementById("result-vision");
+    const resultCoreValuesEl = document.getElementById("result-core-values");
+    const resultGoalsEl = document.getElementById("result-goals");
+
+    const getPageVision = () => {
+      const saved = document.getElementById("selected-vision-text");
+      if (saved && !selectedVision?.classList.contains("hidden")) {
+        return saved.textContent?.trim() || "";
+      }
+      return visionInput?.value?.trim() || visionInput?.defaultValue || "";
+    };
+
+    const getPageCoreValues = () =>
+      checkboxes.filter((cb) => cb.checked).map((cb) => cb.value);
+
+    const renderScoreCard = (container, title, score, explanation) => {
+      container.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium">${title}</span>
+          <span class="text-sm font-semibold text-primary">${score}/10</span>
+        </div>
+        <p class="text-xs text-muted-foreground">${explanation}</p>
+      `;
+    };
+
+    strategyAnalyzeBtn?.addEventListener("click", async () => {
+      const action = strategyActionEl?.value?.trim();
+      if (!action) {
+        strategyActionEl?.focus();
+        return;
+      }
+
+      const vision = getPageVision();
+      const coreValues = getPageCoreValues();
+      const goalsData = JSON.parse(
+        document.getElementById("page-goals-data")?.textContent || "[]"
+      );
+      const goals = goalsData.map((g) => ({ title: g.title }));
+
+      strategyAnalyzeBtn.disabled = true;
+      strategyResult?.classList.add("hidden");
+      strategyError?.classList.add("hidden");
+      strategyLoading?.classList.remove("hidden");
+
+      try {
+        const res = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ vision, coreValues, goals, action }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error ?? `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (resultVisionEl && data.vision) {
+          renderScoreCard(resultVisionEl, "Vision", data.vision.score, data.vision.explanation);
+        }
+        if (resultCoreValuesEl && data.coreValues) {
+          renderScoreCard(resultCoreValuesEl, "Core Values", data.coreValues.score, data.coreValues.explanation);
+        }
+        if (resultGoalsEl && Array.isArray(data.goals)) {
+          resultGoalsEl.innerHTML = "";
+          data.goals.forEach((goal) => {
+            const card = document.createElement("div");
+            card.className = "rounded-lg border border-border bg-background px-4 py-3 space-y-1";
+            card.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">${goal.title}</span>
+                <span class="text-sm font-semibold text-primary">${goal.score}/10</span>
+              </div>
+              <p class="text-xs text-muted-foreground">${goal.explanation}</p>
+            `;
+            resultGoalsEl.appendChild(card);
+          });
+        }
+
+        strategyResult?.classList.remove("hidden");
+      } catch (err) {
+        if (strategyError) {
+          strategyError.textContent = `Error: ${err.message}`;
+          strategyError.classList.remove("hidden");
+        }
+      } finally {
+        strategyLoading?.classList.add("hidden");
+        strategyAnalyzeBtn.disabled = false;
+      }
+    });
+  </script>
+</BaseLayout>

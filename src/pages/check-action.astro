@@ -1,0 +1,140 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <header class="border-b border-border bg-card/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center gap-4">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-card transition-colors" aria-label="Back to dashboard">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="bg-primary/10 p-2 rounded-lg">
+          <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold">Action Compatibility Check</h1>
+          <p class="text-sm text-muted-foreground">Analyze alignment with your North Star</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
+    <!-- Input Card -->
+    <div class="rounded-xl border border-border bg-card p-8">
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <label for="action" class="block text-sm font-medium">Describe the Action or Decision</label>
+          <textarea
+            id="action"
+            rows="5"
+            placeholder="e.g., Should I accept this new partnership opportunity that will require 3 months of engineering focus?"
+            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+          ></textarea>
+        </div>
+        <button
+          id="analyze-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          Analyze Alignment
+        </button>
+      </div>
+    </div>
+
+    <!-- No strategy warning -->
+    <div id="no-strategy-warning" class="hidden rounded-xl border border-border bg-card/50 p-6 text-sm text-muted-foreground">
+      <p>
+        No strategy found. <a href="/create-strategy" class="text-primary hover:underline">Create your strategy</a> first to get accurate alignment analysis.
+        The check will use a default strategy for now.
+      </p>
+    </div>
+
+    <!-- Result -->
+    <div id="result-card" class="hidden rounded-xl border border-border bg-card p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div id="result-icon-wrap" class="bg-primary/10 p-3 rounded-lg">
+          <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold">Analysis Result</h2>
+          <p class="text-sm text-muted-foreground">Strategic alignment evaluation</p>
+        </div>
+      </div>
+      <div id="result-content" class="text-sm leading-relaxed whitespace-pre-wrap text-foreground"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden rounded-xl border border-border bg-card p-8 text-center">
+      <div class="inline-block w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin mb-3"></div>
+      <p class="text-sm text-muted-foreground">Analyzing strategic alignment…</p>
+    </div>
+
+    <!-- Error -->
+    <p id="error-msg" class="hidden text-sm text-red-400"></p>
+  </main>
+</BaseLayout>
+
+<script>
+  const STORAGE_KEY = "north-star-strategy";
+
+  const actionEl = document.getElementById("action") as HTMLTextAreaElement;
+  const analyzeBtn = document.getElementById("analyze-btn") as HTMLButtonElement;
+  const resultCard = document.getElementById("result-card") as HTMLDivElement;
+  const resultContent = document.getElementById("result-content") as HTMLDivElement;
+  const loadingEl = document.getElementById("loading") as HTMLDivElement;
+  const errorEl = document.getElementById("error-msg") as HTMLParagraphElement;
+  const noStrategyEl = document.getElementById("no-strategy-warning") as HTMLDivElement;
+
+  const storedStrategy = localStorage.getItem(STORAGE_KEY);
+  if (!storedStrategy) noStrategyEl.classList.remove("hidden");
+
+  analyzeBtn.addEventListener("click", async () => {
+    const action = actionEl.value.trim();
+    if (!action) {
+      actionEl.focus();
+      return;
+    }
+
+    const strategy = storedStrategy ??
+      "Build a sustainable, profitable business that delivers real value to customers and enables long-term growth.";
+
+    analyzeBtn.disabled = true;
+    resultCard.classList.add("hidden");
+    errorEl.classList.add("hidden");
+    loadingEl.classList.remove("hidden");
+
+    try {
+      const res = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ strategy, action }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
+      }
+
+      const text = await res.text();
+      resultContent.textContent = text;
+      resultCard.classList.remove("hidden");
+    } catch (err) {
+      errorEl.textContent = `Error: ${(err as Error).message}`;
+      errorEl.classList.remove("hidden");
+    } finally {
+      loadingEl.classList.add("hidden");
+      analyzeBtn.disabled = false;
+    }
+  });
+</script>

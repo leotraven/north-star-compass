@@ -1,0 +1,198 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <header class="border-b border-border bg-card/80 backdrop-blur-sm">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-card transition-colors" aria-label="Back to dashboard">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="bg-primary/10 p-2 rounded-lg">
+          <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold">Create Strategy</h1>
+          <p class="text-sm text-muted-foreground">Define your North Star framework</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8 space-y-6">
+    <!-- AI Generation Option -->
+    <div class="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 p-6">
+      <div class="flex items-start gap-4">
+        <div class="bg-primary/10 p-3 rounded-lg flex-shrink-0">
+          <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-semibold mb-2">AI-Powered Strategy Generation</h3>
+          <p class="text-sm text-muted-foreground mb-4">
+            Let AI analyze your existing goals and generate a strategic framework tailored to your objectives.
+            You can always customize it afterward.
+          </p>
+          <button
+            id="generate-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/>
+            </svg>
+            Generate from Goals
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy Form -->
+    <div class="rounded-xl border border-border bg-card p-8">
+      <form id="strategy-form" class="space-y-6">
+        <!-- Vision -->
+        <div class="space-y-2">
+          <label for="vision" class="block text-sm font-medium">Vision <span class="text-primary">*</span></label>
+          <p class="text-xs text-muted-foreground">Where do you want to be in 3–5 years?</p>
+          <textarea
+            id="vision"
+            name="vision"
+            rows="3"
+            required
+            placeholder="e.g., Become the leading SaaS platform for enterprise project management by 2027"
+            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Mission -->
+        <div class="space-y-2">
+          <label for="mission" class="block text-sm font-medium">Mission <span class="text-primary">*</span></label>
+          <p class="text-xs text-muted-foreground">Why does your work matter? What value do you create?</p>
+          <textarea
+            id="mission"
+            name="mission"
+            rows="3"
+            required
+            placeholder="e.g., Empower teams to collaborate seamlessly and deliver projects with precision and efficiency"
+            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Core Values -->
+        <div class="space-y-3">
+          <label class="block text-sm font-medium">Core Values</label>
+          <p class="text-xs text-muted-foreground">The principles that guide every decision.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="core-values-grid">
+            <input name="core-value-0" type="text" placeholder="e.g., Innovation First"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+            <input name="core-value-1" type="text" placeholder="e.g., Customer Success"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+            <input name="core-value-2" type="text" placeholder="e.g., Data-Driven Decisions"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+            <input name="core-value-3" type="text" placeholder="e.g., Transparent Communication"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+          </div>
+        </div>
+
+        <!-- Focus Areas -->
+        <div class="space-y-3">
+          <label class="block text-sm font-medium">Focus Areas</label>
+          <p class="text-xs text-muted-foreground">The key strategic priorities for the next 12 months.</p>
+          <div class="space-y-2" id="focus-areas-list">
+            <input name="focus-area-0" type="text" placeholder="e.g., Market expansion into Europe"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+            <input name="focus-area-1" type="text" placeholder="e.g., Product-led growth strategy"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+            <input name="focus-area-2" type="text" placeholder="e.g., Enterprise customer acquisition"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors" />
+          </div>
+          <button type="button" id="add-focus-area"
+            class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Focus Area
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 0-2-2V5a2 2 0 0 0 2-2h11l5 5v11a2 2 0 0 0-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Strategy
+          </button>
+          <a href="/" class="px-6 py-3 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const STORAGE_KEY = "north-star-strategy";
+
+  const form = document.getElementById("strategy-form") as HTMLFormElement;
+  const generateBtn = document.getElementById("generate-btn") as HTMLButtonElement;
+  const addFocusAreaBtn = document.getElementById("add-focus-area") as HTMLButtonElement;
+  const focusList = document.getElementById("focus-areas-list") as HTMLDivElement;
+
+  // Pre-fill from localStorage if exists
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const visionEl = document.getElementById("vision") as HTMLTextAreaElement;
+    if (visionEl) visionEl.value = saved;
+  }
+
+  // AI generation (fills form with example data)
+  generateBtn.addEventListener("click", async () => {
+    generateBtn.disabled = true;
+    generateBtn.textContent = "Generating…";
+    await new Promise(r => setTimeout(r, 1500));
+
+    (document.getElementById("vision") as HTMLTextAreaElement).value =
+      "Become the leading SaaS platform for enterprise project management by 2027";
+    (document.getElementById("mission") as HTMLTextAreaElement).value =
+      "Empower teams to collaborate seamlessly and deliver projects with precision and efficiency";
+
+    const cvInputs = document.querySelectorAll<HTMLInputElement>("[name^='core-value-']");
+    const values = ["Innovation First", "Customer Success", "Data-Driven Decisions", "Transparent Communication"];
+    cvInputs.forEach((el, i) => { if (values[i]) el.value = values[i]; });
+
+    generateBtn.disabled = false;
+    generateBtn.textContent = "Generate from Goals";
+  });
+
+  // Add focus area
+  let focusCount = 3;
+  addFocusAreaBtn.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.name = `focus-area-${focusCount++}`;
+    input.type = "text";
+    input.placeholder = "Add another focus area";
+    input.className = "w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors";
+    focusList.appendChild(input);
+    input.focus();
+  });
+
+  // Save to localStorage
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const vision = (document.getElementById("vision") as HTMLTextAreaElement).value.trim();
+    const mission = (document.getElementById("mission") as HTMLTextAreaElement).value.trim();
+    // Save the vision as the strategy key for the evaluate endpoint
+    localStorage.setItem(STORAGE_KEY, `Vision: ${vision}\n\nMission: ${mission}`);
+    window.location.href = "/strategy";
+  });
+</script>

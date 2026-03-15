@@ -1,0 +1,169 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <header class="border-b border-border bg-card/80 backdrop-blur-sm">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-card transition-colors" aria-label="Back to dashboard">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="bg-primary/10 p-2 rounded-lg">
+          <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold">Add New Goal</h1>
+          <p class="text-sm text-muted-foreground">Define a new North Star objective</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8">
+    <div class="rounded-xl border border-border bg-card p-8">
+      <form id="add-goal-form" class="space-y-6">
+        <!-- Goal Title -->
+        <div class="space-y-2">
+          <label for="title" class="block text-sm font-medium">Goal Title <span class="text-primary">*</span></label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            required
+            placeholder="e.g., Increase Annual Revenue to $10M"
+            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Life Pillar -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <label for="lifePillar" class="block text-sm font-medium">Life Pillar <span class="text-primary">*</span></label>
+              <button
+                id="life-pillars-info-btn"
+                type="button"
+                class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                aria-label="Learn about life pillars"
+              >
+                i
+              </button>
+            </div>
+            <select
+              id="lifePillar"
+              name="lifePillar"
+              required
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+            >
+              <option value="">Select a life pillar</option>
+              <option value="Health">Health</option>
+              <option value="Career">Career</option>
+              <option value="Relationships">Relationships</option>
+              <option value="Finance">Finance</option>
+              <option value="Personal Growth">Personal Growth</option>
+              <option value="Community">Community</option>
+            </select>
+          </div>
+
+          <!-- Deadline -->
+          <div class="space-y-2">
+            <label for="deadline" class="block text-sm font-medium">Deadline <span class="text-primary">*</span></label>
+            <input
+              id="deadline"
+              name="deadline"
+              type="date"
+              required
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 0-2-2V5a2 2 0 0 0 2-2h11l5 5v11a2 2 0 0 0-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Goal
+          </button>
+          <a href="/" class="px-6 py-3 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <div
+    id="life-pillars-popup"
+    class="hidden fixed inset-0 z-50 bg-black/40 px-6 py-10"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="life-pillars-popup-title"
+  >
+    <div class="max-w-xl mx-auto rounded-xl border border-border bg-card p-6 space-y-4">
+      <div class="flex items-center justify-between gap-3">
+        <h2 id="life-pillars-popup-title" class="text-lg font-semibold">Life Pillars</h2>
+        <button
+          id="life-pillars-close-btn"
+          type="button"
+          class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          aria-label="Close life pillars popup"
+        >
+          x
+        </button>
+      </div>
+
+      <p class="text-sm text-muted-foreground">
+        Life pillars are the major areas of your life where goals belong. Core values are your guiding principles, while life pillars are the buckets you organize goals into.
+      </p>
+
+      <div class="space-y-3 text-sm text-muted-foreground">
+        <p><span class="font-medium text-foreground">Health:</span> Physical and mental wellbeing that supports your energy and consistency.</p>
+        <p><span class="font-medium text-foreground">Career:</span> Professional growth, meaningful work, and long-term contribution.</p>
+        <p><span class="font-medium text-foreground">Relationships:</span> Family, friendships, and connections you actively nurture.</p>
+        <p><span class="font-medium text-foreground">Finance:</span> Financial stability, savings, and responsible money decisions.</p>
+        <p><span class="font-medium text-foreground">Personal Growth:</span> Learning, mindset, and skills that help you evolve over time.</p>
+        <p><span class="font-medium text-foreground">Community:</span> Contribution, service, and meaningful participation beyond yourself.</p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // @ts-nocheck
+  const form = document.getElementById("add-goal-form") as HTMLFormElement;
+  const lifePillarsInfoBtn = document.getElementById("life-pillars-info-btn");
+  const lifePillarsPopup = document.getElementById("life-pillars-popup");
+  const lifePillarsCloseBtn = document.getElementById("life-pillars-close-btn");
+
+  lifePillarsInfoBtn?.addEventListener("click", () => {
+    lifePillarsPopup?.classList.remove("hidden");
+  });
+
+  lifePillarsCloseBtn?.addEventListener("click", () => {
+    lifePillarsPopup?.classList.add("hidden");
+  });
+
+  lifePillarsPopup?.addEventListener("click", (e) => {
+    if (e.target === lifePillarsPopup) {
+      lifePillarsPopup.classList.add("hidden");
+    }
+  });
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    const goals = JSON.parse(localStorage.getItem("north-star-goals") ?? "[]");
+    goals.push({ ...data, id: Date.now().toString() });
+    localStorage.setItem("north-star-goals", JSON.stringify(goals));
+    window.location.href = "/";
+  });
+</script>
