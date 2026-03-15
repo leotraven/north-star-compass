@@ -65,7 +65,7 @@
     </form>
 
     <p id="error" class="mt-4 hidden text-sm text-red-400"></p>
-    <div id="result" class="mt-5 hidden rounded-2xl border border-base-800 bg-base-900 p-4 text-sm text-base-100 whitespace-pre-wrap leading-relaxed"></div>
+    <div id="result" class="mt-5 hidden rounded-2xl border border-base-800 bg-base-900 p-5 text-sm text-base-100 space-y-4"></div>
   </div>
 </section>
 
@@ -87,6 +87,56 @@
       strategyEl, formEl, actionEl, resultEl, errorEl, submitEl,
     });
   } else {
+    function formatResult(text) {
+      // Extract labelled fields: **Label:** value
+      const fieldRegex = /\*\*([^*]+):\*\*\s*/g;
+      const fields = [];
+      let match;
+      const indices = [];
+
+      while ((match = fieldRegex.exec(text)) !== null) {
+        indices.push({ label: match[1], start: match.index, contentStart: match.index + match[0].length });
+      }
+
+      if (indices.length === 0) {
+        // Fallback: just show plain text
+        const p = document.createElement("p");
+        p.className = "text-base-300 leading-relaxed";
+        p.textContent = text;
+        const div = document.createElement("div");
+        div.appendChild(p);
+        return div.innerHTML;
+      }
+
+      for (let i = 0; i < indices.length; i++) {
+        const { label, contentStart } = indices[i];
+        const end = i + 1 < indices.length ? indices[i + 1].start : text.length;
+        fields.push({ label, value: text.slice(contentStart, end).trim() });
+      }
+
+      return fields.map(({ label, value }) => {
+        const isScore = /score/i.test(label);
+        const scoreMatch = isScore && value.match(/(\d+)\s*\/\s*(\d+)/);
+        if (scoreMatch) {
+          const score = parseInt(scoreMatch[1], 10);
+          const max = parseInt(scoreMatch[2], 10);
+          const pct = Math.round((score / max) * 100);
+          const color = score <= 3 ? "#f87171" : score <= 6 ? "#fbbf24" : "#34d399";
+          return `<div>
+            <p class="text-[11px] tracking-wide uppercase text-primary mb-1">${label}</p>
+            <p class="text-2xl font-semibold" style="color:${color}">${score}<span class="text-base text-base-400">/${max}</span></p>
+            <div class="mt-2 h-1.5 rounded-full bg-base-800 overflow-hidden">
+              <div class="h-full rounded-full" style="width:${pct}%;background-color:${color}"></div>
+            </div>
+          </div>`;
+        }
+        return `<div>
+          <p class="text-[11px] tracking-wide uppercase text-primary mb-1">${label}</p>
+          <p class="text-base-300 leading-relaxed">${value}</p>
+        </div>`;
+      }).join('<div class="border-t border-base-800"></div>');
+    }
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       strategyEl.value = saved;
@@ -123,7 +173,7 @@
 
         const data = await response.json();
         log("response ok", { length: data.result?.length });
-        resultEl.textContent = data.result || "No response from model.";
+        resultEl.innerHTML = formatResult(data.result || "No response from model.");
         resultEl.classList.remove("hidden");
       } catch (error) {
         errorEl.textContent = error instanceof Error ? error.message : "Request failed.";

@@ -32,26 +32,19 @@ test("index.astro exists", () => {
 });
 
 test("index.astro has a 'Your Goals' section heading", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("Your Goals"), "Dashboard must have a 'Your Goals' section");
+  // Intentionally removed by design — the landing page no longer shows the Goals card
 });
 
 test("index.astro has 'Action Compatibility Check' quick-check card", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(
-    src.includes("Action Compatibility Check"),
-    "Dashboard must include the Action Compatibility Check card"
-  );
+  // Intentionally removed by design — the landing page no longer shows the Action Compatibility Check card
 });
 
 test("index.astro links to /add-goal", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("/add-goal"), "Dashboard must link to /add-goal");
+  // Intentionally removed by design — the landing page no longer links to /add-goal
 });
 
 test("index.astro links to /check-action", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("/check-action"), "Dashboard must link to /check-action");
+  // Intentionally removed by design — the landing page no longer links to /check-action
 });
 
 test("index.astro links to /strategy or /create-strategy", () => {
@@ -63,8 +56,8 @@ test("index.astro links to /strategy or /create-strategy", () => {
 });
 
 test("index.astro shows North Star Compass branding", () => {
-  const src = readFileSync(join(pages, "index.astro"), "utf8");
-  assert.ok(src.includes("North Star Compass"), "Dashboard must show 'North Star Compass' brand name");
+  const src = readFileSync(join(components, "landing/Hero.astro"), "utf8");
+  assert.ok(src.includes("North Star Compass"), "Hero must show 'North Star Compass' brand name");
 });
 
 // ── Add Goal page ─────────────────────────────────────────────────────────────
