@@ -18,7 +18,7 @@ const goals = [
   { title: "Launch my personal project", deadline: "Aug 15, 2026" },
 ];
 
-const defaultVision =
+const visionDefault =
   "Healthy, fulfilled, and free - doing work that matters, surrounded by people I love, with time and energy to pursue what brings me alive.";
 ---
 
@@ -98,6 +98,8 @@ const defaultVision =
       </div>
     </div>
 
+    <!-- Mission and Strategic Pillars flow from your core values and vision -->
+
     <!-- Vision -->
     <div class="rounded-xl border border-border bg-card p-6">
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -128,7 +130,7 @@ const defaultVision =
           id="vision-input"
           rows="4"
           class="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:border-primary"
-        >{defaultVision}</textarea>
+        >{visionDefault}</textarea>
         <div class="flex justify-end">
           <button
             id="save-vision-btn"
