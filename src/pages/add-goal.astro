@@ -53,25 +53,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Category -->
-          <div class="space-y-2">
-            <label for="category" class="block text-sm font-medium">Category <span class="text-primary">*</span></label>
-            <select
-              id="category"
-              name="category"
-              required
-              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors appearance-none"
-            >
-              <option value="" disabled selected>Select category</option>
-              <option value="financial">Financial</option>
-              <option value="growth">Growth</option>
-              <option value="operations">Operations</option>
-              <option value="product">Product</option>
-              <option value="team">Team</option>
-              <option value="customer">Customer</option>
-            </select>
-          </div>
-
           <!-- Deadline -->
           <div class="space-y-2">
             <label for="deadline" class="block text-sm font-medium">Deadline <span class="text-primary">*</span></label>
@@ -136,7 +117,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
     const goals = JSON.parse(localStorage.getItem("north-star-goals") ?? "[]");
-    goals.push({ ...data, id: Date.now().toString(), progress: 0 });
+    goals.push({ ...data, id: Date.now().toString() });
     localStorage.setItem("north-star-goals", JSON.stringify(goals));
     window.location.href = "/";
   });

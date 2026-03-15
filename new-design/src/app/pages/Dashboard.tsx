@@ -9,24 +9,18 @@ import { ActionQuickCheck } from "../components/ActionQuickCheck";
 const mockGoals = [
   {
     id: "1",
-    title: "Increase Annual Revenue to $10M",
-    category: "Financial",
+    title: "Run my first marathon",
     deadline: "2026-12-31",
-    progress: 45,
   },
   {
     id: "2",
-    title: "Launch Product in 3 New Markets",
-    category: "Growth",
-    deadline: "2026-09-30",
-    progress: 60,
+    title: "Read 24 books this year",
+    deadline: "2026-12-31",
   },
   {
     id: "3",
-    title: "Build Team of 50+ Employees",
-    category: "Operations",
+    title: "Launch my personal project",
     deadline: "2026-08-15",
-    progress: 30,
   },
 ];
 
