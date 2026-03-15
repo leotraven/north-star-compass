@@ -274,6 +274,48 @@ test("strategy.astro does not include a life pillars section", () => {
   assert.ok(!src.includes("Life Pillars"), "strategy page should not include a Life Pillars section");
 });
 
+test("strategy.astro Check Action Alignment card uses border-border matching Core Values style", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  const alignIdx = src.indexOf("<!-- Strategy Alignment");
+  const afterAlign = src.slice(alignIdx, alignIdx + 80);
+  assert.ok(
+    afterAlign.includes("border-border"),
+    "Check Action Alignment card should use border-border like Core Values, not border-primary/20"
+  );
+});
+
+test("strategy.astro Check Action Alignment header uses h3 matching Core Values style", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('<h3 class="font-semibold">Check Action Alignment</h3>'),
+    "Check Action Alignment header should use the same plain h3 font-semibold as Core Values"
+  );
+});
+
+test("strategy.astro Check Action Alignment has an inline textarea", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="strategy-action"'),
+    "strategy page must have an inline textarea with id strategy-action for action input"
+  );
+});
+
+test("strategy.astro Check Action Alignment has an inline Analyze button", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes('id="strategy-analyze-btn"'),
+    "strategy page must have an inline analyze button with id strategy-analyze-btn"
+  );
+});
+
+test("strategy.astro Check Action Alignment calls /api/evaluate inline", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("/api/evaluate"),
+    "strategy page must call /api/evaluate inline for action compatibility check"
+  );
+});
+
 test("strategy.astro Vision card uses border-border matching Core Values style", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
   const visionIdx = src.indexOf("<!-- Vision -->");

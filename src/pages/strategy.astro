@@ -172,22 +172,28 @@ const defaultVision =
     </div>
 
     <!-- Strategy Alignment CTA -->
-    <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
-      <div class="flex items-start gap-4">
-        <div class="bg-primary/20 p-3 rounded-lg flex-shrink-0">
-          <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-          </svg>
-        </div>
-        <div>
-          <h3 class="font-semibold mb-1">Check Action Alignment</h3>
-          <p class="text-sm text-muted-foreground mb-4">
-            Use the Action Compatibility Check to evaluate whether your daily decisions align with this strategy.
-          </p>
-          <a href="/check-action" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-            Check an Action
-          </a>
-        </div>
+    <div class="rounded-xl border border-border bg-card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Check Action Alignment</h3>
+      </div>
+      <div class="space-y-4">
+        <p class="text-sm text-muted-foreground">Describe an action or decision to evaluate whether it aligns with your strategy.</p>
+        <textarea
+          id="strategy-action"
+          rows="3"
+          placeholder="e.g., Should I accept this new partnership opportunity that will require 3 months of engineering focus?"
+          class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+        ></textarea>
+        <button
+          id="strategy-analyze-btn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Analyze Alignment
+        </button>
+        <div id="strategy-loading" class="hidden text-sm text-muted-foreground">Analyzing…</div>
+        <p id="strategy-error" class="hidden text-sm text-red-400"></p>
+        <div id="strategy-result" class="hidden rounded-lg border border-border bg-background px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap"></div>
       </div>
     </div>
   </main>
@@ -289,5 +295,56 @@ const defaultVision =
     });
 
     updateSelectionState();
+
+    const STORAGE_KEY = "north-star-strategy";
+    const strategyActionEl = document.getElementById("strategy-action");
+    const strategyAnalyzeBtn = document.getElementById("strategy-analyze-btn");
+    const strategyLoading = document.getElementById("strategy-loading");
+    const strategyError = document.getElementById("strategy-error");
+    const strategyResult = document.getElementById("strategy-result");
+
+    strategyAnalyzeBtn?.addEventListener("click", async () => {
+      const action = strategyActionEl?.value?.trim();
+      if (!action) {
+        strategyActionEl?.focus();
+        return;
+      }
+
+      const storedStrategy = localStorage.getItem(STORAGE_KEY);
+      const strategy = storedStrategy ??
+        "Build a sustainable, profitable business that delivers real value to customers and enables long-term growth.";
+
+      strategyAnalyzeBtn.disabled = true;
+      strategyResult?.classList.add("hidden");
+      strategyError?.classList.add("hidden");
+      strategyLoading?.classList.remove("hidden");
+
+      try {
+        const res = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ strategy, action }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error ?? `HTTP ${res.status}`);
+        }
+
+        const text = await res.text();
+        if (strategyResult) {
+          strategyResult.textContent = text;
+          strategyResult.classList.remove("hidden");
+        }
+      } catch (err) {
+        if (strategyError) {
+          strategyError.textContent = `Error: ${err.message}`;
+          strategyError.classList.remove("hidden");
+        }
+      } finally {
+        strategyLoading?.classList.add("hidden");
+        strategyAnalyzeBtn.disabled = false;
+      }
+    });
   </script>
 </BaseLayout>
