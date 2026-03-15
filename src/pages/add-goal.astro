@@ -1,0 +1,143 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <header class="border-b border-border bg-card/80 backdrop-blur-sm">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-card transition-colors" aria-label="Back to dashboard">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="bg-primary/10 p-2 rounded-lg">
+          <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-semibold">Add New Goal</h1>
+          <p class="text-sm text-muted-foreground">Define a new North Star objective</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8">
+    <div class="rounded-xl border border-border bg-card p-8">
+      <form id="add-goal-form" class="space-y-6">
+        <!-- Goal Title -->
+        <div class="space-y-2">
+          <label for="title" class="block text-sm font-medium">Goal Title <span class="text-primary">*</span></label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            required
+            placeholder="e.g., Increase Annual Revenue to $10M"
+            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-2">
+          <label for="description" class="block text-sm font-medium">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            placeholder="Provide additional context about this goal..."
+            class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Category -->
+          <div class="space-y-2">
+            <label for="category" class="block text-sm font-medium">Category <span class="text-primary">*</span></label>
+            <select
+              id="category"
+              name="category"
+              required
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors appearance-none"
+            >
+              <option value="" disabled selected>Select category</option>
+              <option value="financial">Financial</option>
+              <option value="growth">Growth</option>
+              <option value="operations">Operations</option>
+              <option value="product">Product</option>
+              <option value="team">Team</option>
+              <option value="customer">Customer</option>
+            </select>
+          </div>
+
+          <!-- Deadline -->
+          <div class="space-y-2">
+            <label for="deadline" class="block text-sm font-medium">Deadline <span class="text-primary">*</span></label>
+            <input
+              id="deadline"
+              name="deadline"
+              type="date"
+              required
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Target Metric -->
+          <div class="space-y-2">
+            <label for="targetMetric" class="block text-sm font-medium">Target Metric</label>
+            <input
+              id="targetMetric"
+              name="targetMetric"
+              type="text"
+              placeholder="e.g., $10M ARR"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+            />
+          </div>
+
+          <!-- Current Value -->
+          <div class="space-y-2">
+            <label for="currentValue" class="block text-sm font-medium">Current Value</label>
+            <input
+              id="currentValue"
+              name="currentValue"
+              type="text"
+              placeholder="e.g., $4.5M ARR"
+              class="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 0-2-2V5a2 2 0 0 0 2-2h11l5 5v11a2 2 0 0 0-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Goal
+          </button>
+          <a href="/" class="px-6 py-3 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById("add-goal-form") as HTMLFormElement;
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    const goals = JSON.parse(localStorage.getItem("north-star-goals") ?? "[]");
+    goals.push({ ...data, id: Date.now().toString(), progress: 0 });
+    localStorage.setItem("north-star-goals", JSON.stringify(goals));
+    window.location.href = "/";
+  });
+</script>

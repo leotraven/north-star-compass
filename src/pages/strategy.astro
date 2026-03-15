@@ -1,0 +1,194 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const pillars = [
+  {
+    title: "Revenue Growth",
+    description: "Scale ARR from $4.5M to $10M through new market expansion and product-led growth",
+    initiatives: [
+      "Launch in European market by Q3 2026",
+      "Increase conversion rate by 25%",
+      "Expand enterprise tier features",
+    ],
+    icon: "trending",
+  },
+  {
+    title: "Team Excellence",
+    description: "Build a world-class team of 50+ professionals across engineering, sales, and customer success",
+    initiatives: [
+      "Hire 15 engineers by Q2 2026",
+      "Establish remote-first culture",
+      "Implement quarterly training programs",
+    ],
+    icon: "users",
+  },
+  {
+    title: "Product Innovation",
+    description: "Deliver cutting-edge features that set new industry standards for collaboration tools",
+    initiatives: [
+      "Ship AI-powered project insights",
+      "Launch mobile app by Q4 2026",
+      "Integrate with 20+ third-party tools",
+    ],
+    icon: "lightbulb",
+  },
+];
+
+const coreValues = [
+  "Innovation First",
+  "Customer Success",
+  "Data-Driven Decisions",
+  "Transparent Communication",
+];
+
+const focusAreas = [
+  "Market expansion into Europe and Asia",
+  "Product-led growth strategy",
+  "Enterprise customer acquisition",
+  "Team scaling and culture building",
+];
+---
+
+<BaseLayout>
+  <header class="border-b border-border bg-card/80 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-card transition-colors" aria-label="Back to dashboard">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </a>
+        <div class="flex items-center gap-3">
+          <div class="bg-primary/10 p-2 rounded-lg">
+            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl font-semibold">Your Strategy</h1>
+            <p class="text-sm text-muted-foreground">North Star alignment framework</p>
+          </div>
+        </div>
+      </div>
+      <a href="/create-strategy" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Edit Strategy
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8 space-y-8">
+    <!-- Vision & Mission -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="rounded-xl border border-primary/20 bg-card p-6">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 class="font-semibold text-sm uppercase tracking-wider text-primary">Vision</h3>
+        </div>
+        <p class="leading-relaxed" id="vision-text">
+          Become the leading SaaS platform for enterprise project management by 2027
+        </p>
+      </div>
+      <div class="rounded-xl border border-primary/20 bg-card p-6">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 class="font-semibold text-sm uppercase tracking-wider text-primary">Mission</h3>
+        </div>
+        <p class="leading-relaxed" id="mission-text">
+          Empower teams to collaborate seamlessly and deliver projects with precision and efficiency
+        </p>
+      </div>
+    </div>
+
+    <!-- Core Values -->
+    <div class="rounded-xl border border-border bg-card p-6">
+      <h3 class="font-semibold mb-4">Core Values</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {coreValues.map((value) => (
+          <div class="px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 text-center">
+            <span class="font-medium text-sm">{value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Strategic Pillars -->
+    <div>
+      <h2 class="text-2xl font-semibold mb-6">Strategic Pillars</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {pillars.map((pillar) => (
+          <div class="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors">
+            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+              {pillar.icon === "trending" && (
+                <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+                </svg>
+              )}
+              {pillar.icon === "users" && (
+                <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              )}
+              {pillar.icon === "lightbulb" && (
+                <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/>
+                  <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 9 14"/>
+                </svg>
+              )}
+            </div>
+            <h3 class="font-semibold mb-2">{pillar.title}</h3>
+            <p class="text-sm text-muted-foreground mb-4 leading-relaxed">{pillar.description}</p>
+            <div class="space-y-2">
+              <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Key Initiatives</p>
+              <ul class="space-y-2">
+                {pillar.initiatives.map((item) => (
+                  <li class="flex gap-2 text-sm">
+                    <div class="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <span class="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Focus Areas -->
+    <div class="rounded-xl border border-border bg-card p-6">
+      <h3 class="font-semibold mb-4">Current Focus Areas</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {focusAreas.map((area) => (
+          <div class="flex gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20">
+            <div class="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0"></div>
+            <span class="text-sm">{area}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Strategy Alignment CTA -->
+    <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
+      <div class="flex items-start gap-4">
+        <div class="bg-primary/20 p-3 rounded-lg flex-shrink-0">
+          <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-1">Check Action Alignment</h3>
+          <p class="text-sm text-muted-foreground mb-4">
+            Use the Action Compatibility Check to evaluate whether your daily decisions align with this strategy.
+          </p>
+          <a href="/check-action" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+            Check an Action
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
