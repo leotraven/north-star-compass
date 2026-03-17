@@ -137,10 +137,25 @@ export const POST: APIRoute = async ({ request }) => {
       };
       const content = completion.choices[0]?.message?.content ?? "";
 
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(content);
-      } catch {
+      const tryParseJson = (raw: string): unknown => {
+        // Direct parse
+        try { return JSON.parse(raw); } catch { /* continue */ }
+        // Strip markdown code fences: ```json ... ``` or ``` ... ```
+        const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (fenced) {
+          try { return JSON.parse(fenced[1].trim()); } catch { /* continue */ }
+        }
+        // Extract first {...} block
+        const start = raw.indexOf("{");
+        const end = raw.lastIndexOf("}");
+        if (start !== -1 && end > start) {
+          try { return JSON.parse(raw.slice(start, end + 1)); } catch { /* continue */ }
+        }
+        return null;
+      };
+
+      const parsed = tryParseJson(content);
+      if (!parsed) {
         log("JSON parse failure, raw:", content);
         return new Response(JSON.stringify({ error: "Model returned invalid JSON.", raw: content }), {
           status: 502,
