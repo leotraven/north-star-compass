@@ -228,9 +228,10 @@ const visionDefault =
         <div id="strategy-loading" class="hidden text-sm text-base-400">Analyzing…</div>
         <p id="strategy-error" class="hidden text-sm text-red-400"></p>
         <div id="strategy-result" class="hidden space-y-3">
-          <div id="result-vision" class="rounded-2xl border border-base-800 bg-base-925 px-4 py-3 space-y-1"></div>
           <div id="result-core-values" class="rounded-2xl border border-base-800 bg-base-925 px-4 py-3 space-y-1"></div>
+          <div id="result-vision" class="rounded-2xl border border-base-800 bg-base-925 px-4 py-3 space-y-1"></div>
           <div id="result-goals" class="space-y-2"></div>
+          <div id="result-summary" class="rounded-2xl border border-primary/30 bg-base-925 px-4 py-3 space-y-1"></div>
         </div>
       </div>
     </div>
@@ -451,6 +452,7 @@ const visionDefault =
     const resultVisionEl = document.getElementById("result-vision");
     const resultCoreValuesEl = document.getElementById("result-core-values");
     const resultGoalsEl = document.getElementById("result-goals");
+    const resultSummaryEl = document.getElementById("result-summary");
 
     const analyzeInfoBtn = document.getElementById("analyze-info-btn");
     const analyzeInfoTooltip = document.getElementById("analyze-info-tooltip");
@@ -492,6 +494,15 @@ const visionDefault =
       `;
     };
 
+    const renderNoInfoCard = (container, title) => {
+      container.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium text-base-100">${title}</span>
+        </div>
+        <p class="text-xs text-base-400 italic">No information provided — assessment cannot be given.</p>
+      `;
+    };
+
     strategyAnalyzeBtn?.addEventListener("click", async () => {
       const action = strategyActionEl?.value?.trim();
       if (!action) {
@@ -503,6 +514,10 @@ const visionDefault =
       const coreValues = getPageCoreValues();
       const goalsData = JSON.parse(localStorage.getItem(GOALS_KEY) ?? "[]");
       const goals = goalsData.map((g) => ({ title: g.title }));
+
+      const hasCoreValues = coreValues.length > 0;
+      const hasVision = !!vision;
+      const hasGoals = goals.length > 0;
 
       strategyAnalyzeBtn.disabled = true;
       strategyResult?.classList.add("hidden");
@@ -523,26 +538,52 @@ const visionDefault =
 
         const data = await res.json();
 
-        if (resultVisionEl && data.vision) {
-          renderScoreCard(resultVisionEl, "Vision", data.vision.score, data.vision.explanation);
+        if (resultCoreValuesEl) {
+          if (hasCoreValues && data.coreValues) {
+            renderScoreCard(resultCoreValuesEl, "Core Values", data.coreValues.score, data.coreValues.explanation);
+          } else {
+            renderNoInfoCard(resultCoreValuesEl, "Core Values");
+          }
         }
-        if (resultCoreValuesEl && data.coreValues) {
-          renderScoreCard(resultCoreValuesEl, "Core Values", data.coreValues.score, data.coreValues.explanation);
+
+        if (resultVisionEl) {
+          if (hasVision && data.vision) {
+            renderScoreCard(resultVisionEl, "Vision", data.vision.score, data.vision.explanation);
+          } else {
+            renderNoInfoCard(resultVisionEl, "Vision");
+          }
         }
-        if (resultGoalsEl && Array.isArray(data.goals)) {
+
+        if (resultGoalsEl) {
           resultGoalsEl.innerHTML = "";
-          data.goals.forEach((goal) => {
+          if (hasGoals && Array.isArray(data.goals) && data.goals.length > 0) {
+            data.goals.forEach((goal) => {
+              const card = document.createElement("div");
+              card.className = "rounded-2xl border border-base-800 bg-base-925 px-4 py-3 space-y-1";
+              card.innerHTML = `
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-base-100">${goal.title}</span>
+                  <span class="text-sm font-semibold text-primary">${goal.score}/10</span>
+                </div>
+                <p class="text-xs text-base-400">${goal.explanation}</p>
+              `;
+              resultGoalsEl.appendChild(card);
+            });
+          } else {
             const card = document.createElement("div");
             card.className = "rounded-2xl border border-base-800 bg-base-925 px-4 py-3 space-y-1";
             card.innerHTML = `
               <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-base-100">${goal.title}</span>
-                <span class="text-sm font-semibold text-primary">${goal.score}/10</span>
+                <span class="text-sm font-medium text-base-100">Goals</span>
               </div>
-              <p class="text-xs text-base-400">${goal.explanation}</p>
+              <p class="text-xs text-base-400 italic">No information provided — assessment cannot be given.</p>
             `;
             resultGoalsEl.appendChild(card);
-          });
+          }
+        }
+
+        if (resultSummaryEl && data.summary) {
+          renderScoreCard(resultSummaryEl, "Overall Summary", data.summary.score, data.summary.explanation);
         }
 
         strategyResult?.classList.remove("hidden");

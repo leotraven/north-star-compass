@@ -15,7 +15,7 @@ const LEGACY_SYSTEM_PROMPT = `You are an expert strategic advisor. Evaluate whet
 Use exactly these labels with the ** markdown bold syntax. No numbered lists, no other formatting.`;
 
 const STRUCTURED_SYSTEM_PROMPT =
-  "You are a strategic alignment advisor. Evaluate whether the given action aligns with the user's personal strategy. Be objective and concise.";
+  "You are a strategic alignment advisor. Evaluate whether the given action aligns with the user's personal strategy. For each dimension score from 1 (no alignment) to 10 (perfect alignment). Always provide an overall summary score and explanation. Be objective and concise.";
 
 const ALIGNMENT_SCHEMA = {
   type: "object",
@@ -54,8 +54,18 @@ const ALIGNMENT_SCHEMA = {
         additionalProperties: false,
       },
     },
+    summary: {
+      type: "object",
+      description: "Overall alignment summary across all dimensions",
+      properties: {
+        score: { type: "number", description: "Overall alignment score from 1 to 10" },
+        explanation: { type: "string", description: "Two to three sentences summarising the overall strategic alignment" },
+      },
+      required: ["score", "explanation"],
+      additionalProperties: false,
+    },
   },
-  required: ["vision", "coreValues", "goals"],
+  required: ["vision", "coreValues", "goals", "summary"],
   additionalProperties: false,
 };
 
