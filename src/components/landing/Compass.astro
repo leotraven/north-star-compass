@@ -41,7 +41,7 @@
           placeholder="Transition from marketing to software engineering within 2 years"
           class="mt-2 w-full rounded-2xl border border-base-700 bg-base-900 px-4 py-3 text-sm text-base-100 placeholder:text-base-500 outline-none focus:border-primary"
         ></textarea>
-        <p class="mt-2 text-xs text-base-500">Saved locally so you don't have to retype it.</p>
+
       </div>
 
       <div>
@@ -72,8 +72,6 @@
 <script>
   const isDebug = () => localStorage.getItem("debug") === "true";
   const log = (...args) => { if (isDebug()) console.log("[compass]", ...args); };
-
-  const STORAGE_KEY = "north-star-strategy";
 
   const strategyEl = document.getElementById("strategy");
   const actionEl = document.getElementById("action");
@@ -137,15 +135,6 @@
 
       return `<div style="flex:1;display:flex;flex-direction:column;gap:16px">${fieldsHtml}</div>${gaugeHtml}`;
     }
-
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      strategyEl.value = saved;
-    }
-
-    strategyEl.addEventListener("input", () => {
-      localStorage.setItem(STORAGE_KEY, strategyEl.value);
-    });
 
     formEl.addEventListener("submit", async (event) => {
       event.preventDefault();
