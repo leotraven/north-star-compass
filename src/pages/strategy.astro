@@ -200,13 +200,31 @@ const visionDefault =
           placeholder="e.g., Should I accept this new partnership opportunity that will require 3 months of engineering focus?"
           class="w-full rounded-2xl border border-base-700 bg-base-950 px-4 py-3 text-sm text-base-100 placeholder:text-base-500 outline-none focus:border-primary resize-none"
         ></textarea>
-        <button
-          id="strategy-analyze-btn"
-          type="button"
-          class="inline-flex items-center gap-2 px-5 h-10 bg-primary text-black rounded-full text-sm font-medium hover:opacity-90 duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          Analyze Alignment
-        </button>
+        <div class="flex items-center gap-3">
+          <button
+            id="strategy-analyze-btn"
+            type="button"
+            class="inline-flex items-center gap-2 px-5 h-10 bg-primary text-black rounded-full text-sm font-medium hover:opacity-90 duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Analyze Alignment
+          </button>
+          <div class="relative">
+            <button
+              id="analyze-info-btn"
+              type="button"
+              class="inline-flex items-center justify-center w-7 h-7 rounded-full border border-base-700 text-base-400 hover:border-base-500 hover:text-base-200 transition-colors text-xs font-medium"
+              aria-label="Analysis quality info"
+            >i</button>
+            <div
+              id="analyze-info-tooltip"
+              class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl border border-base-700 bg-base-900 px-3 py-2 text-xs text-base-400 shadow-lg z-10"
+              role="tooltip"
+            >
+              Analysis quality improves when core values, vision, and goals are all filled in.
+              <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-base-700"></div>
+            </div>
+          </div>
+        </div>
         <div id="strategy-loading" class="hidden text-sm text-base-400">Analyzing…</div>
         <p id="strategy-error" class="hidden text-sm text-red-400"></p>
         <div id="strategy-result" class="hidden space-y-3">
@@ -433,6 +451,18 @@ const visionDefault =
     const resultVisionEl = document.getElementById("result-vision");
     const resultCoreValuesEl = document.getElementById("result-core-values");
     const resultGoalsEl = document.getElementById("result-goals");
+
+    const analyzeInfoBtn = document.getElementById("analyze-info-btn");
+    const analyzeInfoTooltip = document.getElementById("analyze-info-tooltip");
+
+    analyzeInfoBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      analyzeInfoTooltip?.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", () => {
+      analyzeInfoTooltip?.classList.add("hidden");
+    });
 
     const persistStrategy = () => {
       const vision = selectedVisionText?.textContent?.trim() ||
