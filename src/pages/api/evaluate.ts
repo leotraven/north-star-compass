@@ -17,6 +17,11 @@ Use exactly these labels with the ** markdown bold syntax. No numbered lists, no
 const STRUCTURED_SYSTEM_PROMPT =
   "You are a strategic alignment advisor. Evaluate whether the given action aligns with the user's personal strategy. For each dimension score from 1 (no alignment) to 10 (perfect alignment). Always provide an overall summary score and explanation. Be objective and concise.";
 
+const STRUCTURED_SYSTEM_PROMPT_JSON_OBJECT =
+  `You are a strategic alignment advisor. Evaluate whether the given action aligns with the user's personal strategy. Score each dimension 1-10. Respond ONLY with a valid JSON object — no prose, no markdown — matching exactly this structure:
+{"vision":{"score":<number>,"explanation":"<string>"},"coreValues":{"score":<number>,"explanation":"<string>"},"goals":[{"title":"<string>","score":<number>,"explanation":"<string>"}],"summary":{"score":<number>,"explanation":"<string>"}}`;
+
+
 const ALIGNMENT_SCHEMA = {
   type: "object",
   properties: {
@@ -101,41 +106,34 @@ export const POST: APIRoute = async ({ request }) => {
 
       const userContent = `Vision: ${visionText}\nCore Values: ${coreValuesText}\nGoals:\n${goalsText}\n\nAction to evaluate: ${action}`;
 
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const callModel = async (useJsonSchema: boolean) => {
+        const body: Record<string, unknown> = {
           model,
           messages: [
-            { role: "system", content: STRUCTURED_SYSTEM_PROMPT },
+            {
+              role: "system",
+              content: useJsonSchema ? STRUCTURED_SYSTEM_PROMPT : STRUCTURED_SYSTEM_PROMPT_JSON_OBJECT,
+            },
             { role: "user", content: userContent },
           ],
           temperature: 0.2,
-          max_tokens: 768,
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: "alignment_result",
-              strict: true,
-              schema: ALIGNMENT_SCHEMA,
-            },
-          },
-        }),
-      });
-
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        log("OpenRouter error", errBody);
-        throw new Error((errBody as any)?.error?.message ?? `OpenRouter HTTP ${res.status}`);
-      }
-
-      const completion = await res.json() as {
-        choices: Array<{ message: { content: string } }>;
+          max_tokens: 900,
+          response_format: useJsonSchema
+            ? { type: "json_schema", json_schema: { name: "alignment_result", strict: true, schema: ALIGNMENT_SCHEMA } }
+            : { type: "json_object" },
+        };
+        const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!r.ok) {
+          const errBody = await r.json().catch(() => ({}));
+          throw new Error((errBody as any)?.error?.message ?? `OpenRouter HTTP ${r.status}`);
+        }
+        const completion = await r.json() as { choices: Array<{ message: { content: string } }> };
+        return completion.choices[0]?.message?.content ?? "";
       };
-      const content = completion.choices[0]?.message?.content ?? "";
 
       const tryParseJson = (raw: string): unknown => {
         // Direct parse
@@ -154,9 +152,19 @@ export const POST: APIRoute = async ({ request }) => {
         return null;
       };
 
-      const parsed = tryParseJson(content);
+      // Attempt 1: json_schema (strict structured output, best supported by OpenAI-compatible models)
+      let content = await callModel(true);
+      let parsed = tryParseJson(content);
+
+      // Attempt 2: fall back to json_object with the schema embedded in the system prompt
       if (!parsed) {
-        log("JSON parse failure, raw:", content);
+        log("json_schema parse failed, retrying with json_object");
+        content = await callModel(false);
+        parsed = tryParseJson(content);
+      }
+
+      if (!parsed) {
+        log("JSON parse failure after retry, raw:", content);
         return new Response(JSON.stringify({ error: "Model returned invalid JSON.", raw: content }), {
           status: 502,
           headers: { "Content-Type": "application/json" },
