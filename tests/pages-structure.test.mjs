@@ -477,3 +477,44 @@ test("global.css applies scroll-behavior smooth for anchor navigation", () => {
     "global.css must set scroll-behavior: smooth so anchor links scroll instead of jump"
   );
 });
+
+// ── localStorage persistence ──────────────────────────────────────────────────
+
+test("storage.mjs module exists", () => {
+  assert.ok(
+    existsSync(join(root, "src/lib/storage.mjs")),
+    "src/lib/storage.mjs must exist as the shared localStorage utility"
+  );
+});
+
+test("strategy.astro persists vision and core values to north-star-strategy", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("north-star-strategy"),
+    "strategy page must use the north-star-strategy key to persist vision and core values"
+  );
+});
+
+test("strategy.astro loads goals from north-star-goals localStorage", () => {
+  const src = readFileSync(join(pages, "strategy.astro"), "utf8");
+  assert.ok(
+    src.includes("north-star-goals"),
+    "strategy page must load goals from the north-star-goals localStorage key"
+  );
+});
+
+test("add-goal.astro redirects to /strategy after saving a goal", () => {
+  const src = readFileSync(join(pages, "add-goal.astro"), "utf8");
+  assert.ok(
+    src.includes('"/strategy"') || src.includes("'/strategy'"),
+    "add-goal page must redirect to /strategy after saving so the user sees their goal"
+  );
+});
+
+test("check-action.astro loads goals from north-star-goals for analysis", () => {
+  const src = readFileSync(join(pages, "check-action.astro"), "utf8");
+  assert.ok(
+    src.includes("north-star-goals"),
+    "check-action page must load goals from north-star-goals to include them in alignment analysis"
+  );
+});

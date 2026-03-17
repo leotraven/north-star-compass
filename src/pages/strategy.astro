@@ -12,12 +12,6 @@ const coreValues = [
   "Creativity",
 ];
 
-const goals = [
-  { title: "Run my first marathon", deadline: "Dec 31, 2026" },
-  { title: "Read 24 books this year", deadline: "Dec 31, 2026" },
-  { title: "Launch my personal project", deadline: "Aug 15, 2026" },
-];
-
 const visionDefault =
   "Healthy, fulfilled, and free - doing work that matters, surrounded by people I love, with time and energy to pursue what brings me alive.";
 ---
@@ -158,19 +152,12 @@ const visionDefault =
           Add Goal
         </a>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {goals.map((goal) => (
-          <div class="rounded-xl border border-border bg-card p-5 hover:border-primary/50 transition-colors group">
-            <div class="flex items-center gap-1 text-xs text-muted-foreground mb-3">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-              {goal.deadline}
-            </div>
-            <h3 class="font-semibold group-hover:text-primary transition-colors">{goal.title}</h3>
-          </div>
-        ))}
+      <div id="goals-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Goals rendered client-side from localStorage -->
       </div>
+      <p id="goals-empty-state" class="hidden text-sm text-muted-foreground">
+        No goals yet. <a href="/add-goal" class="text-primary hover:underline">Add your first goal</a> to start tracking progress.
+      </p>
     </div>
 
     <!-- Strategy Alignment CTA -->
@@ -203,8 +190,6 @@ const visionDefault =
       </div>
     </div>
   </main>
-
-  <script type="application/json" id="page-goals-data" set:html={JSON.stringify(goals)}></script>
 
   <script>
     // @ts-nocheck
@@ -278,6 +263,7 @@ const visionDefault =
       renderSelectedValues(selectedValues);
       optionsPanel?.classList.add("hidden");
       emptyState?.classList.add("hidden");
+      persistStrategy();
     });
 
     const openVisionEditor = () => {
@@ -300,9 +286,56 @@ const visionDefault =
       renderVision(vision);
       visionEditor?.classList.add("hidden");
       visionEmptyState?.classList.add("hidden");
+      persistStrategy();
     });
 
     updateSelectionState();
+
+    // ── Render goals from localStorage ───────────────────────────────────────
+    const goalsGrid = document.getElementById("goals-grid");
+    const goalsEmptyState = document.getElementById("goals-empty-state");
+    const storedGoals = JSON.parse(localStorage.getItem(GOALS_KEY) ?? "[]");
+
+    if (storedGoals.length === 0) {
+      goalsEmptyState?.classList.remove("hidden");
+    } else {
+      storedGoals.forEach((goal) => {
+        const card = document.createElement("div");
+        card.className = "rounded-xl border border-border bg-card p-5 hover:border-primary/50 transition-colors group";
+        card.innerHTML = `
+          <div class="flex items-center gap-1 text-xs text-muted-foreground mb-3">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            ${goal.deadline}
+          </div>
+          <h3 class="font-semibold group-hover:text-primary transition-colors">${goal.title}</h3>
+        `;
+        goalsGrid?.appendChild(card);
+      });
+    }
+
+    // ── Restore persisted vision and core values ──────────────────────────────
+    const storedStrategy = loadStoredStrategy();
+    if (storedStrategy) {
+      if (Array.isArray(storedStrategy.coreValues) && storedStrategy.coreValues.length > 0) {
+        storedStrategy.coreValues.forEach((v) => {
+          const cb = checkboxes.find((c) => c.value === v);
+          if (cb) cb.checked = true;
+        });
+        updateSelectionState();
+        const selectedValues = storedStrategy.coreValues;
+        renderSelectedValues(selectedValues);
+        optionsPanel?.classList.add("hidden");
+        emptyState?.classList.add("hidden");
+      }
+      if (storedStrategy.vision) {
+        if (visionInput) visionInput.value = storedStrategy.vision;
+        renderVision(storedStrategy.vision);
+        visionEditor?.classList.add("hidden");
+        visionEmptyState?.classList.add("hidden");
+      }
+    }
 
     const strategyActionEl = document.getElementById("strategy-action");
     const strategyAnalyzeBtn = document.getElementById("strategy-analyze-btn");
@@ -312,6 +345,20 @@ const visionDefault =
     const resultVisionEl = document.getElementById("result-vision");
     const resultCoreValuesEl = document.getElementById("result-core-values");
     const resultGoalsEl = document.getElementById("result-goals");
+
+    const STRATEGY_KEY = "north-star-strategy";
+    const GOALS_KEY = "north-star-goals";
+
+    const loadStoredStrategy = () => {
+      try { return JSON.parse(localStorage.getItem(STRATEGY_KEY) ?? "null"); } catch { return null; }
+    };
+
+    const persistStrategy = () => {
+      const vision = selectedVisionText?.textContent?.trim() ||
+        visionInput?.value?.trim() || visionInput?.defaultValue || "";
+      const coreValues = checkboxes.filter((cb) => cb.checked).map((cb) => cb.value);
+      localStorage.setItem(STRATEGY_KEY, JSON.stringify({ vision, coreValues }));
+    };
 
     const getPageVision = () => {
       const saved = document.getElementById("selected-vision-text");
@@ -343,9 +390,7 @@ const visionDefault =
 
       const vision = getPageVision();
       const coreValues = getPageCoreValues();
-      const goalsData = JSON.parse(
-        document.getElementById("page-goals-data")?.textContent || "[]"
-      );
+      const goalsData = JSON.parse(localStorage.getItem(GOALS_KEY) ?? "[]");
       const goals = goalsData.map((g) => ({ title: g.title }));
 
       strategyAnalyzeBtn.disabled = true;
