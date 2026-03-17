@@ -1,6 +1,4 @@
 import type { APIRoute } from "astro";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { generateText } from "ai";
 
 const DEBUG = import.meta.env.LOG_LEVEL === "debug";
 const log = (...args: unknown[]) => { if (DEBUG) console.log("[evaluate]", ...args); };
@@ -188,19 +186,30 @@ export const POST: APIRoute = async ({ request }) => {
     const apiKey = import.meta.env.OPENROUTER_API_KEY;
     if (!apiKey) throw new Error("Missing OPENROUTER_API_KEY environment variable");
 
-    const openrouter = createOpenRouter({ apiKey });
     const model = import.meta.env.OPENROUTER_MODEL || "openai/gpt-4o";
     log("using model (legacy)", model);
 
-    const { text, usage } = await generateText({
-      model: openrouter(model),
-      system: LEGACY_SYSTEM_PROMPT,
-      prompt: `Long-Term Strategy:\n${strategy}\n\nImmediate Action:\n${action}`,
-      temperature: 0.7,
-      maxTokens: 512,
+    const legacyRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: LEGACY_SYSTEM_PROMPT },
+          { role: "user", content: `Long-Term Strategy:\n${strategy}\n\nImmediate Action:\n${action}` },
+        ],
+        temperature: 0.7,
+        max_tokens: 512,
+      }),
     });
+    if (!legacyRes.ok) {
+      const errBody = await legacyRes.json().catch(() => ({}));
+      throw new Error((errBody as any)?.error?.message ?? `OpenRouter HTTP ${legacyRes.status}`);
+    }
+    const legacyCompletion = await legacyRes.json() as { choices: Array<{ message: { content: string } }> };
+    const text = legacyCompletion.choices[0]?.message?.content ?? "";
 
-    log("response received (legacy)", { length: text.length, usage });
+    log("response received (legacy)", { length: text.length });
 
     return new Response(JSON.stringify({ result: text }), {
       status: 200,
