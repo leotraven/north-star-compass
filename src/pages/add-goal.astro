@@ -162,8 +162,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
     const goals = JSON.parse(localStorage.getItem("north-star-goals") ?? "[]");
-    goals.push({ ...data, id: Date.now().toString() });
+    goals.push({ ...data, id: crypto.randomUUID() });
     localStorage.setItem("north-star-goals", JSON.stringify(goals));
-    window.location.href = "/";
+    window.location.href = "/strategy";
   });
 </script>

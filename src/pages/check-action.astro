@@ -86,7 +86,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <script>
-  const STORAGE_KEY = "north-star-strategy";
+  const STRATEGY_KEY = "north-star-strategy";
+  const GOALS_KEY = "north-star-goals";
 
   const actionEl = document.getElementById("action") as HTMLTextAreaElement;
   const analyzeBtn = document.getElementById("analyze-btn") as HTMLButtonElement;
@@ -96,7 +97,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   const errorEl = document.getElementById("error-msg") as HTMLParagraphElement;
   const noStrategyEl = document.getElementById("no-strategy-warning") as HTMLDivElement;
 
-  const storedStrategy = localStorage.getItem(STORAGE_KEY);
+  const storedStrategy = (() => {
+    try { return JSON.parse(localStorage.getItem(STRATEGY_KEY) ?? "null"); } catch { return null; }
+  })();
+  const storedGoals: Array<{ title: string }> = (() => {
+    try { return JSON.parse(localStorage.getItem(GOALS_KEY) ?? "[]"); } catch { return []; }
+  })();
+
   if (!storedStrategy) noStrategyEl.classList.remove("hidden");
 
   analyzeBtn.addEventListener("click", async () => {
@@ -106,8 +113,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       return;
     }
 
-    const strategy = storedStrategy ??
+    const vision = storedStrategy?.vision ??
       "Build a sustainable, profitable business that delivers real value to customers and enables long-term growth.";
+    const coreValues: string[] = storedStrategy?.coreValues ?? [];
+    const goals = storedGoals.map((g) => ({ title: g.title }));
 
     analyzeBtn.disabled = true;
     resultCard.classList.add("hidden");
@@ -118,7 +127,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       const res = await fetch("/api/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ strategy, action }),
+        body: JSON.stringify({ vision, coreValues, goals, action }),
       });
 
       if (!res.ok) {
@@ -126,8 +135,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
       }
 
-      const text = await res.text();
-      resultContent.textContent = text;
+      const data = await res.json();
+
+      const lines: string[] = [];
+      if (data.vision) lines.push(`Vision (${data.vision.score}/10): ${data.vision.explanation}`);
+      if (data.coreValues) lines.push(`Core Values (${data.coreValues.score}/10): ${data.coreValues.explanation}`);
+      if (Array.isArray(data.goals)) {
+        data.goals.forEach((g: { title: string; score: number; explanation: string }) => {
+          lines.push(`${g.title} (${g.score}/10): ${g.explanation}`);
+        });
+      }
+
+      resultContent.textContent = lines.join("\n\n");
       resultCard.classList.remove("hidden");
     } catch (err) {
       errorEl.textContent = `Error: ${(err as Error).message}`;
