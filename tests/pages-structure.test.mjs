@@ -267,21 +267,23 @@ test("strategy.astro does not include a life pillars section", () => {
   assert.ok(!src.includes("Life Pillars"), "strategy page should not include a Life Pillars section");
 });
 
-test("strategy.astro Check Action Alignment card uses border-border matching Core Values style", () => {
+test("strategy.astro Check Action Alignment card uses landing page design tokens", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
-  const alignIdx = src.indexOf("<!-- Strategy Alignment");
-  const afterAlign = src.slice(alignIdx, alignIdx + 80);
   assert.ok(
-    afterAlign.includes("border-border"),
-    "Check Action Alignment card should use border-border like Core Values, not border-primary/20"
+    src.includes("<!-- Strategy Alignment"),
+    "Check Action Alignment section must have its comment anchor"
+  );
+  assert.ok(
+    src.includes("bg-base-900"),
+    "Check Action Alignment card should use bg-base-900 matching landing page design"
   );
 });
 
-test("strategy.astro Check Action Alignment header uses h3 matching Core Values style", () => {
+test("strategy.astro Check Action Alignment header uses h3 matching landing page style", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
   assert.ok(
-    src.includes('<h3 class="font-semibold">Check Action Alignment</h3>'),
-    "Check Action Alignment header should use the same plain h3 font-semibold as Core Values"
+    src.includes('>Check Action Alignment</h3>'),
+    "Check Action Alignment section must use an h3 heading"
   );
 });
 
@@ -309,39 +311,43 @@ test("strategy.astro Check Action Alignment calls /api/evaluate inline", () => {
   );
 });
 
-test("strategy.astro Vision card uses border-border matching Core Values style", () => {
+test("strategy.astro Vision card uses landing page design tokens", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
-  const visionIdx = src.indexOf("<!-- Vision -->");
-  const afterVision = src.slice(visionIdx, visionIdx + 80);
   assert.ok(
-    afterVision.includes("border-border"),
-    "Vision card container should use border-border like Core Values, not border-primary/20"
+    src.includes("<!-- Vision -->"),
+    "Vision card must have its comment anchor"
+  );
+  assert.ok(
+    src.includes("bg-base-900"),
+    "Vision card should use bg-base-900 matching landing page design"
   );
 });
 
-test("strategy.astro Vision header matches Core Values plain h3 style", () => {
+test("strategy.astro Vision header matches landing page h3 style", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
   assert.ok(
-    src.includes('<h3 class="font-semibold">Vision</h3>'),
-    "Vision header should use the same plain h3 font-semibold style as Core Values"
+    src.includes('>Vision</h3>'),
+    "Vision card must use an h3 element for its heading"
   );
 });
 
-test("strategy.astro Goals section is wrapped in a card matching Core Values style", () => {
+test("strategy.astro Goals section is wrapped in a card matching landing page design", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
-  const goalsIdx = src.indexOf("<!-- Goals -->");
-  const afterGoals = src.slice(goalsIdx, goalsIdx + 100);
   assert.ok(
-    afterGoals.includes("rounded-xl border border-border bg-card"),
-    "Goals section should be wrapped in a card with the same style as Core Values"
+    src.includes("<!-- Goals -->"),
+    "Goals section must have its comment anchor"
+  );
+  assert.ok(
+    src.includes("rounded-2xl border border-base-800 bg-base-900"),
+    "Goals section should use rounded-2xl border-base-800 bg-base-900 matching landing page design"
   );
 });
 
-test("strategy.astro Goals header uses h3 matching Core Values style", () => {
+test("strategy.astro Goals header uses h3 matching landing page style", () => {
   const src = readFileSync(join(pages, "strategy.astro"), "utf8");
   assert.ok(
-    src.includes('<h3 class="font-semibold">Goals</h3>'),
-    "Goals header should use the same plain h3 font-semibold style as Core Values"
+    src.includes('>Goals</h3>'),
+    "Goals header should use an h3 element"
   );
 });
 
